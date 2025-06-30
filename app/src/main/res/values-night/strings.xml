@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Digital Academy</string>
     <string name="faculty">Faculty</string>
@@ -12,6 +13,4 @@
     <string name="forgot_password">Forgot Password ?</string>
     <string name="check_new_user">If you are a new user</string>
     <string name="signup">Signup</string>
-    <string name="faculty_code">Faculty Code :</string>
-    <string name="code">Code :</string>
 </resources>
