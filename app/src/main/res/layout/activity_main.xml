@@ -71,7 +71,7 @@
         tools:layout_editor_absoluteY="127dp" />
 
     <TextView
-        android:id="@+id/sars"
+        android:id="@+id/tvOrgName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"

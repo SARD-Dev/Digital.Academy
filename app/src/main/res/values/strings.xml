@@ -14,4 +14,11 @@
     <string name="signup">Signup</string>
     <string name="faculty_code">Faculty Code :</string>
     <string name="code">Code :</string>
+    <string name="notes">NOTES</string>
+    <string name="gpa_calculator">GPA CALCULATOR</string>
+    <string name="attendance">ATTENDANCE</string>
+    <string name="circular">CIRCULAR</string>
+    <string name="other_college_events_ad">Other college events / ad</string>
+    <string name="about_us">About Us</string>
+    <string name="info">Info</string>
 </resources>

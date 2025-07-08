@@ -13,4 +13,11 @@
     <string name="forgot_password">Forgot Password ?</string>
     <string name="check_new_user">If you are a new user</string>
     <string name="signup">Signup</string>
+    <string name="notes">NOTES</string>
+    <string name="gpa_calculator">GPA CALCULATOR</string>
+    <string name="attendance">ATTENDANCE</string>
+    <string name="circular">CIRCULAR</string>
+    <string name="other_college_events_ad">Other college events / ad</string>
+    <string name="about_us">About Us</string>
+    <string name="info">Info</string>
 </resources>
