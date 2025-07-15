@@ -21,4 +21,15 @@
     <string name="other_college_events_ad">Other college events / ad</string>
     <string name="about_us">About Us</string>
     <string name="info">Info</string>
+    <string name="college_name">College Name</string>
+    <string name="menu_type">Menu Type</string>
+    <string name="department">Department :</string>
+    <string name="semester">Semester :</string>
+    <string name="subject">Subject :</string>
+    <string name="proceed">Proceed</string>
+    <string name="computer_science_engineering">Computer Science Engineering</string>
+    <string name="select_your_semester">Select your Semester :</string>
+    <string name="calculate_gpa">Calculate GPA</string>
+    <string name="to_see_other_department_grades">To see other department grades :</string>
+    <string name="click_here">Click here</string>
 </resources>
