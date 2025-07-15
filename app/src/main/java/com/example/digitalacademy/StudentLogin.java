@@ -3,12 +3,9 @@ package com.example.digitalacademy;
 import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -18,6 +15,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.digitalacademy.Common.StringUtils;
+import com.example.digitalacademy.Common.ToastExtension;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -29,6 +27,7 @@ public class StudentLogin extends AppCompatActivity {
 
     private String registerNumber = "";
     private String password = "";
+    ToastExtension toast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +39,7 @@ public class StudentLogin extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        toast = new ToastExtension(StudentLogin.this);
         this.AssignEvents();
     }
 
@@ -49,7 +49,7 @@ public class StudentLogin extends AppCompatActivity {
         TextView tvForgotPassword = findViewById(R.id.tvForgotPassword);
 
         btnLogin.setOnClickListener(v -> LoginEvent());
-        btnSignUp.setOnClickListener(v -> OpenSignUpScreen());
+        btnSignUp.setOnClickListener(v -> StudentLogin.this.startActivity(new Intent(StudentLogin.this, StudentSignUp.class)));
         tvForgotPassword.setOnClickListener(v -> ForgotPasswordEvent());
 
         tvForgotPassword.setPaintFlags(tvForgotPassword.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
@@ -73,11 +73,11 @@ public class StudentLogin extends AppCompatActivity {
 
     private boolean ValidateControlValues() {
         if (StringUtils.IsNullOrEmptyOrBlank((registerNumber))) {
-            Toast.makeText(StudentLogin.this, "Please enter register number to proceed.", Toast.LENGTH_SHORT).show();
+            toast.ShowShortMessage("Please enter register number to proceed.");
             return false;
         }
         if (StringUtils.IsNullOrEmptyOrBlank((password))) {
-            Toast.makeText(StudentLogin.this, "Please enter password to proceed.", Toast.LENGTH_SHORT).show();
+            toast.ShowShortMessage("Please enter password to proceed.");
             return false;
         }
         return true;
@@ -94,40 +94,34 @@ public class StudentLogin extends AppCompatActivity {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
-                        String passwordFromDB = dataSnapshot.child(registerNumber).child("spassword").getValue(String.class);
-                        String nameFromDB = dataSnapshot.child(registerNumber).child("firstName").getValue(String.class);
+                        String passwordFromDB = dataSnapshot.child(registerNumber).child("password").getValue(String.class);
+                        String studentName = dataSnapshot.child(registerNumber).child("firstName").getValue(String.class);
                         if (passwordFromDB != null && passwordFromDB.equals(password)) {
-                            int flag = 0;
                             Intent intent = new Intent(StudentLogin.this, HomePage.class);
-                            intent.putExtra("srn", registerNumber);
-                            intent.putExtra("snm", nameFromDB);
-                            intent.putExtra("UserFlag", flag);
+                            intent.putExtra("studentRegisterNumber", registerNumber);
+                            intent.putExtra("studentName", studentName);
+                            intent.putExtra("userFlag", "S");
                             startActivity(intent);
                             finish();
                         } else {
-                            Toast.makeText(StudentLogin.this, "Wrong Password", Toast.LENGTH_SHORT).show();
+                            toast.ShowShortMessage("Wrong Password");
                         }
                     } else {
-                        Toast.makeText(StudentLogin.this, "Account not found", Toast.LENGTH_SHORT).show();
+                        toast.ShowShortMessage("Account not found");
                     }
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Toast.makeText(StudentLogin.this, "Fail to get data " + databaseError, Toast.LENGTH_SHORT).show();
+                    toast.ShowShortMessage("Fail to get data " + databaseError);
                 }
             });
         }
     }
 
     private void ForgotPasswordEvent(){
-//        Intent forgotpassword = new Intent(StudentLogin.this, forgotpassword.class);
-//        forgotpassword.putExtra("Flag", 0);
-//        startActivity(forgotpassword);
-    }
-
-    private void OpenSignUpScreen(){
-//        Intent studentsignup = new Intent(getApplicationContext(), studentsignup.class);
-//        startActivity(studentsignup);
+        Intent intent = new Intent(StudentLogin.this, ForgotPassword.class);
+        intent.putExtra("Flag", 0);
+        startActivity(intent);
     }
 }

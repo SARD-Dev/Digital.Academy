@@ -11,6 +11,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DigitalAcademy">
         <activity
+            android:name=".StudentSignUp"
+            android:exported="false" />
+        <activity
+            android:name=".ForgotPassword"
+            android:exported="false" />
+        <activity
             android:name=".CircularScreen"
             android:exported="false" />
         <activity

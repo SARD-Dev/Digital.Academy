@@ -15,7 +15,6 @@ import android.os.Bundle;
 import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -24,6 +23,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.digitalacademy.Common.ToastExtension;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -33,6 +33,7 @@ import com.google.firebase.database.ValueEventListener;
 public class MainActivity extends AppCompatActivity {
 
     Button btnStudentLogin, btnFacultyLogin, btnAdminLogin;
+    ToastExtension toast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         /// Implementation starts
+        toast = new ToastExtension(MainActivity.this);
         this.AssignEvents();
     }
 
@@ -59,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
             CheckFirebaseConnection();
             CheckVersionIdentifier();
         } else {
-            Toast.makeText(MainActivity.this, "No Internet", Toast.LENGTH_LONG).show();
+            toast.ShowShortMessage("No Internet");
             String title = "Network Control Manager";
             String message = "No Internet is Connected. Please check your Internet Connection...";
             ShowAlertDialog(title, message);
@@ -118,15 +120,15 @@ public class MainActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Boolean connected = snapshot.getValue(Boolean.class);
                 if (Boolean.TRUE.equals(connected)) {
-                    ShowShortToastMessage("Connected to Firebase");
+                    toast.ShowShortMessage("Connected to Firebase");
                 } else {
-                    ShowShortToastMessage("Disconnected from Firebase");
+                    toast.ShowShortMessage("Disconnected from Firebase");
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                ShowShortToastMessage("Firebase connection was cancelled");
+                toast.ShowShortMessage("Firebase connection was cancelled");
             }
         });
     }
@@ -159,15 +161,9 @@ public class MainActivity extends AppCompatActivity {
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(MainActivity.this, "databaseError", Toast.LENGTH_SHORT).show();
-                ShowShortToastMessage("Firebase connection was cancelled");
+                toast.ShowShortMessage("Firebase connection was cancelled");
             }
         });
-    }
-
-    /// Toast Message - Utility Method
-    private void ShowShortToastMessage(String toastMessage) {
-        Toast.makeText(MainActivity.this, toastMessage, Toast.LENGTH_SHORT).show();
     }
 
     /// Alert Dialog - Utility Method
