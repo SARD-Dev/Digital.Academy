@@ -11,6 +11,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DigitalAcademy">
         <activity
+            android:name=".StudentSignUp"
+            android:exported="false" />
+        <activity
+            android:name=".ForgotPassword"
+            android:exported="false" />
+        <activity
+            android:name=".CircularScreen"
+            android:exported="false" />
+        <activity
+            android:name=".GradeCalculation"
+            android:exported="false" />
+        <activity
+            android:name=".InformationSelect"
+            android:exported="false" />
+        <activity
             android:name=".HomePage"
             android:exported="false" />
         <activity

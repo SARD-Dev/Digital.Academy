@@ -52,7 +52,7 @@
         app:layout_constraintVertical_bias="0.18" />
 
     <Button
-        android:id="@+id/btn1"
+        android:id="@+id/btnNotes"
         android:layout_width="140dp"
         android:layout_height="130dp"
         android:layout_weight="1"
@@ -68,7 +68,7 @@
         app:layout_constraintVertical_bias="0.27" />
 
     <Button
-        android:id="@+id/btn2"
+        android:id="@+id/btnGradeCalculation"
         android:layout_width="140dp"
         android:layout_height="130dp"
         android:layout_weight="1"
@@ -84,7 +84,7 @@
         app:layout_constraintVertical_bias="0.27" />
 
     <Button
-        android:id="@+id/btn3"
+        android:id="@+id/btnAttendance"
         android:layout_width="140dp"
         android:layout_height="130dp"
         android:layout_weight="1"
@@ -100,7 +100,7 @@
         app:layout_constraintVertical_bias="0.57" />
 
     <Button
-        android:id="@+id/btn4"
+        android:id="@+id/btnCircular"
         android:layout_width="140dp"
         android:layout_height="130dp"
         android:layout_weight="1"
@@ -116,7 +116,7 @@
         app:layout_constraintVertical_bias="0.57" />
 
     <Button
-        android:id="@+id/btn5"
+        android:id="@+id/btnInfo"
         android:layout_width="140dp"
         android:layout_height="130dp"
         android:layout_weight="1"
@@ -132,7 +132,7 @@
         app:layout_constraintVertical_bias="0.87" />
 
     <Button
-        android:id="@+id/btn6"
+        android:id="@+id/btnAboutUs"
         android:layout_width="140dp"
         android:layout_height="130dp"
         android:layout_weight="1"
