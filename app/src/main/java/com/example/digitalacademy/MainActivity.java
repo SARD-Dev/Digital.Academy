@@ -23,7 +23,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.digitalacademy.Common.Helpers.AlertDialogHelper;
 import com.example.digitalacademy.Common.StringUtils;
-import com.example.digitalacademy.Common.ToastExtension;
+import com.example.digitalacademy.Common.Helpers.ToastExtension;
 import com.example.digitalacademy.Interface.FirebaseCallBack;
 import com.example.digitalacademy.Services.FirebaseService;
 

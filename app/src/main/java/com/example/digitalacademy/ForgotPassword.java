@@ -18,7 +18,7 @@ import com.example.digitalacademy.Common.Enumerations;
 import com.example.digitalacademy.Common.Helpers.PhoneNumberAuthentication;
 import com.example.digitalacademy.Common.Helpers.ProgressDialogHelper;
 import com.example.digitalacademy.Common.StringUtils;
-import com.example.digitalacademy.Common.ToastExtension;
+import com.example.digitalacademy.Common.Helpers.ToastExtension;
 import com.example.digitalacademy.Interface.FirebaseCallBack;
 import com.example.digitalacademy.Interface.PhoneAuthCallBack;
 import com.example.digitalacademy.Services.FirebaseService;
@@ -32,7 +32,6 @@ public class ForgotPassword extends AppCompatActivity {
     private PhoneNumberAuthentication phoneNumberAuthentication;
     private FirebaseService firebaseService;
     private ProgressDialogHelper progressDialog;
-    private FirebaseCallBack firebaseCallBack;
     private PhoneAuthCallBack phoneAuthCallBack;
 
     private String phoneNumber = "";
@@ -44,6 +43,7 @@ public class ForgotPassword extends AppCompatActivity {
     private EditText etOtp;
     private TextView tvPhoneNumber;
     // end region - Controls Variables
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +67,6 @@ public class ForgotPassword extends AppCompatActivity {
         this.assignEvents();
         this.getUserFlagFromIntent();
         this.setDisplayKey();
-        this.setFirebaseCallBack();
         this.setPhoneAuthCallBack();
     }
 
@@ -97,9 +96,9 @@ public class ForgotPassword extends AppCompatActivity {
         TextView tvDisplayKey = findViewById(R.id.tvDisplayKey);
 
         if (StringUtils.equals(userFlag, "S")) {
-            tvDisplayKey.setText("Enter your Register Number:");
+            tvDisplayKey.setText(R.string.enter_your_register_number);
         } else if (StringUtils.equals(userFlag, "F")) {
-            tvDisplayKey.setText("Enter your Staff Code:");
+            tvDisplayKey.setText(R.string.enter_your_staff_code);
         }
     }
 
@@ -120,11 +119,33 @@ public class ForgotPassword extends AppCompatActivity {
     }
 
     private void getStudentPhoneNumber(String registerNumber) {
-        firebaseService.getStudentPhoneNumber(registerNumber, firebaseCallBack);
+        firebaseService.getStudentPhoneNumber(registerNumber, new FirebaseCallBack<>() {
+
+            @Override
+            public void onSuccess(String object) {
+                verifyPhoneNumber(object);
+            }
+
+            @Override
+            public void onError(String object) {
+                toast.ShowShortMessage(object);
+            }
+        });
     }
 
     private void getFacultyPhoneNumber(String facultyCode) {
-        firebaseService.getFacultyPhoneNumber(facultyCode, firebaseCallBack);
+        firebaseService.getFacultyPhoneNumber(facultyCode, new FirebaseCallBack<>() {
+
+            @Override
+            public void onSuccess(String object) {
+                verifyPhoneNumber(object);
+            }
+
+            @Override
+            public void onError(String object) {
+                toast.ShowShortMessage(object);
+            }
+        });
     }
 
 
@@ -138,28 +159,22 @@ public class ForgotPassword extends AppCompatActivity {
     }
 
     private void tvResendOtpClick() {
-        ProgressDialogHelper progressDialog = new ProgressDialogHelper(this);
         progressDialog.show("Resending Code");
-
-        phoneNumberAuthentication = new PhoneNumberAuthentication(this,
-                phoneAuthCallBack);
+        phoneNumberAuthentication = new PhoneNumberAuthentication(this, phoneAuthCallBack);
         phoneNumberAuthentication.verifyPhoneNumber(phoneNumber);
     }
 
-    private void verifyPhoneNumber() {
+    private void verifyPhoneNumber(String phoneNumber) {
         if (StringUtils.hasText(phoneNumber)) {
             phoneNumber = "+91" + phoneNumber;
-
-            ProgressDialogHelper progressDialog = new ProgressDialogHelper(this);
+            this.phoneNumber = phoneNumber;
             progressDialog.show("Verifying Phone Number");
-
             phoneNumberAuthentication = new PhoneNumberAuthentication(this, phoneAuthCallBack);
             phoneNumberAuthentication.verifyPhoneNumber(phoneNumber);
         }
     }
 
     private void verifyPhoneNumberWithCode(String code) {
-        ProgressDialogHelper progressDialog = new ProgressDialogHelper(this);
         progressDialog.show("Verifying code");
 
         if (phoneNumberAuthentication == null) {
@@ -193,7 +208,7 @@ public class ForgotPassword extends AppCompatActivity {
         tvOtpMessage = findViewById(R.id.tvOtpMessage);
         tvEnterOtp = findViewById(R.id.tvEnterOtp);
 
-        tvOtpMessage.setText("OTP has been sent to your phone number");
+        tvOtpMessage.setText(R.string.otp_has_been_sent_to_your_phone_number);
 
         tvOtpMessage.setVisibility(View.VISIBLE);
         tvPhoneNumber.setVisibility(View.VISIBLE);
@@ -201,20 +216,6 @@ public class ForgotPassword extends AppCompatActivity {
         etOtp.setVisibility(View.VISIBLE);
         tvResendOtp.setVisibility(View.VISIBLE);
         btnVerifyOtp.setVisibility(View.VISIBLE);
-    }
-
-    private void setFirebaseCallBack(){
-        firebaseCallBack = new FirebaseCallBack() {
-            @Override
-            public void onSuccess(Object object) {
-                verifyPhoneNumber();
-            }
-
-            @Override
-            public void onError(Object object) {
-                toast.ShowShortMessage(object.toString());
-            }
-        };
     }
 
     private  void setPhoneAuthCallBack(){

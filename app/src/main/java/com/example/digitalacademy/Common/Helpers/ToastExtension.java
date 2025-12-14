@@ -1,14 +1,14 @@
-package com.example.digitalacademy.Common;
+package com.example.digitalacademy.Common.Helpers;
 
 import android.content.Context;
 import android.widget.Toast;
 
-import com.example.digitalacademy.MainActivity;
-
 public class ToastExtension {
 
     private final Context context;
-    public ToastExtension(Context context){
+
+    /// Constructor
+    public ToastExtension(Context context) {
         this.context = context;
     }
 
@@ -16,4 +16,5 @@ public class ToastExtension {
     public void ShowShortMessage(String toastMessage) {
         Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show();
     }
+
 }
