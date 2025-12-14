@@ -32,4 +32,15 @@
     <string name="calculate_gpa">Calculate GPA</string>
     <string name="to_see_other_department_grades">To see other department grades :</string>
     <string name="click_here">Click here</string>
+    <string name="enter_here">Enter here :</string>
+    <string name="get_otp">Get OTP</string>
+    <string name="otp_has_been_send_to_the_following_mobile_number">OTP has been send to the following mobile number</string>
+    <string name="resend_otp">Resend OTP</string>
+    <string name="enter_the_otp">Enter the OTP:</string>
+    <string name="verify_otp">Verify OTP</string>
+    <string name="create_password">Create Password:</string>
+    <string name="save">Save</string>
+    <string name="enter_your_register_number">Enter your Register Number:</string>
+    <string name="enter_your_staff_code">Enter your Staff Code:</string>
+    <string name="otp_has_been_sent_to_your_phone_number">OTP has been sent to your phone number</string>
 </resources>

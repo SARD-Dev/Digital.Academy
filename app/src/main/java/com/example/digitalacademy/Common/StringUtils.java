@@ -4,15 +4,16 @@ import java.util.Objects;
 
 public class StringUtils {
 
-    public static boolean IsNullOrEmptyOrBlank(String inputText) {
+    public static boolean isNullOrBlank(String inputText) {
         return inputText == null || inputText.isBlank();
     }
 
-    public static boolean HasText(String inputText) {
+    public static boolean hasText(String inputText) {
         return inputText != null && !inputText.isBlank();
     }
 
-    public static boolean Equals(String a, String b) {
-        return Objects.requireNonNullElse(a, "").equalsIgnoreCase(Objects.requireNonNullElse(b, ""));
+    public static boolean equals(String a, String b) {
+        return Objects.requireNonNullElse(a, "")
+                .equalsIgnoreCase(Objects.requireNonNullElse(b, ""));
     }
 }

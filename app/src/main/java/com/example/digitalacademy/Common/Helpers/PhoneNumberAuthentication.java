@@ -21,6 +21,7 @@ public class PhoneNumberAuthentication {
     private final PhoneAuthCallBack callBack;
     private PhoneAuthProvider.ForceResendingToken forceResendingToken;
 
+    /// Constructor
     public PhoneNumberAuthentication(Context context, PhoneAuthCallBack callBack) {
         this.context = context;
         this.callBack = callBack;
@@ -44,9 +45,9 @@ public class PhoneNumberAuthentication {
                 callBack.onCodeSent();
             }
         };
-
     }
 
+    /// Method to verify phone number
     public void verifyPhoneNumber(String phoneNumber) {
         try {
             Activity activity = (Activity) context;
@@ -64,6 +65,26 @@ public class PhoneNumberAuthentication {
         }
     }
 
+    /// Method to re-verify phone number
+    public void reVerifyPhoneNumber(String phoneNumber) {
+        try {
+            Activity activity = (Activity) context;
+            FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+            PhoneAuthOptions options =
+                    PhoneAuthOptions.newBuilder(firebaseAuth)
+                            .setPhoneNumber(phoneNumber)
+                            .setTimeout(60L, TimeUnit.SECONDS)
+                            .setActivity(activity)
+                            .setCallbacks(callBacks)
+                            .setForceResendingToken(forceResendingToken)
+                            .build();
+            PhoneAuthProvider.verifyPhoneNumber(options);
+        } catch (Exception e) {
+            callBack.onVerificationFailed(e);
+        }
+    }
+
+    /// Method to verify phone number with code
     public void verifyPhoneNumberWithCode(String code) {
         try {
             PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId, code);
@@ -73,6 +94,7 @@ public class PhoneNumberAuthentication {
         }
     }
 
+    /// Method to sign in with phone auth credential
     private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
         try {
             FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();

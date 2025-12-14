@@ -33,17 +33,13 @@ public class ForgotPassword extends AppCompatActivity {
     private FirebaseService firebaseService;
     private ProgressDialogHelper progressDialog;
     private PhoneAuthCallBack phoneAuthCallBack;
-
     private String phoneNumber = "";
-    // region - Controls Variables
     private EditText etKey;
     private Button btnSendOtp;
     private TextView tvResendOtp;
     private Button btnVerifyOtp;
     private EditText etOtp;
     private TextView tvPhoneNumber;
-    // end region - Controls Variables
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +54,7 @@ public class ForgotPassword extends AppCompatActivity {
         this.onCreateEvent();
     }
 
+    /// Method to create event
     private void onCreateEvent() {
         this.toast = new ToastExtension(this);
         this.firebaseService = new FirebaseService();
@@ -70,6 +67,7 @@ public class ForgotPassword extends AppCompatActivity {
         this.setPhoneAuthCallBack();
     }
 
+    /// Method to assign control instances
     private void assignControlInstances() {
         etKey = findViewById(R.id.etKey);
         btnSendOtp = findViewById(R.id.btnSendOtp);
@@ -81,36 +79,40 @@ public class ForgotPassword extends AppCompatActivity {
         tvResendOtp.setPaintFlags(tvResendOtp.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
     }
 
+    /// Method to assign events
     private void assignEvents() {
         btnSendOtp.setOnClickListener(v -> btnSendOtpClick());
         btnVerifyOtp.setOnClickListener(v -> btnVerifyOtpClick());
         tvResendOtp.setOnClickListener(v -> tvResendOtpClick());
     }
 
+    /// Method to get user flag from intent
     private void getUserFlagFromIntent() {
         Intent intent = getIntent();
         userFlag = intent.getStringExtra("userFlag");
     }
 
+    /// Method to set display key
     private void setDisplayKey() {
         TextView tvDisplayKey = findViewById(R.id.tvDisplayKey);
 
-        if (StringUtils.equals(userFlag, "S")) {
+        if (StringUtils.equals(userFlag, Enumerations.User.Student.getEnumDescription())) {
             tvDisplayKey.setText(R.string.enter_your_register_number);
-        } else if (StringUtils.equals(userFlag, "F")) {
+        } else if (StringUtils.equals(userFlag, Enumerations.User.Faculty.getEnumDescription())) {
             tvDisplayKey.setText(R.string.enter_your_staff_code);
         }
     }
 
+    /// Method to send otp
     private void btnSendOtpClick() {
         String userKey = etKey.getText().toString();
 
         btnSendOtp.setEnabled(false);
 
         if (StringUtils.hasText(userKey)) {
-            if (StringUtils.equals(userFlag, "S")) {
+            if (StringUtils.equals(userFlag, Enumerations.User.Student.getEnumDescription())) {
                 this.getStudentPhoneNumber(userKey);
-            } else if (StringUtils.equals(userFlag, "F")) {
+            } else if (StringUtils.equals(userFlag, Enumerations.User.Faculty.getEnumDescription())) {
                 this.getFacultyPhoneNumber(userKey);
             }
         } else {
@@ -118,6 +120,7 @@ public class ForgotPassword extends AppCompatActivity {
         }
     }
 
+    /// Method to get student phone number
     private void getStudentPhoneNumber(String registerNumber) {
         firebaseService.getStudentPhoneNumber(registerNumber, new FirebaseCallBack<>() {
 
@@ -133,6 +136,7 @@ public class ForgotPassword extends AppCompatActivity {
         });
     }
 
+    /// Method to get faculty phone number
     private void getFacultyPhoneNumber(String facultyCode) {
         firebaseService.getFacultyPhoneNumber(facultyCode, new FirebaseCallBack<>() {
 
@@ -148,7 +152,7 @@ public class ForgotPassword extends AppCompatActivity {
         });
     }
 
-
+    /// Method to verify otp
     private void btnVerifyOtpClick() {
         String code = etOtp.getText().toString().trim();
         if (StringUtils.hasText(code)) {
@@ -158,12 +162,14 @@ public class ForgotPassword extends AppCompatActivity {
         }
     }
 
+    /// Method to resend otp
     private void tvResendOtpClick() {
         progressDialog.show("Resending Code");
         phoneNumberAuthentication = new PhoneNumberAuthentication(this, phoneAuthCallBack);
-        phoneNumberAuthentication.verifyPhoneNumber(phoneNumber);
+        phoneNumberAuthentication.reVerifyPhoneNumber(phoneNumber);
     }
 
+    /// Method to verify phone number
     private void verifyPhoneNumber(String phoneNumber) {
         if (StringUtils.hasText(phoneNumber)) {
             phoneNumber = "+91" + phoneNumber;
@@ -174,6 +180,7 @@ public class ForgotPassword extends AppCompatActivity {
         }
     }
 
+    /// Method to verify phone number with code
     private void verifyPhoneNumberWithCode(String code) {
         progressDialog.show("Verifying code");
 
@@ -185,23 +192,25 @@ public class ForgotPassword extends AppCompatActivity {
         phoneNumberAuthentication.verifyPhoneNumberWithCode(code);
     }
 
+    /// Method to open change password screen
     private void openChangePasswordScreen() {
         String userKey = etKey.getText().toString();
 
         Intent intent = new Intent(ForgotPassword.this, ChangePassword.class);
 
-        if (StringUtils.equals(userFlag, "S")) {
+        if (StringUtils.equals(userFlag, Enumerations.User.Student.getEnumDescription())) {
             intent.putExtra("registerNumber", userKey);
             intent.putExtra("userFlag", Enumerations.User.Student.getEnumDescription());
-        } else if (StringUtils.equals(userFlag, "F")) {
+        } else if (StringUtils.equals(userFlag, Enumerations.User.Faculty.getEnumDescription())) {
             intent.putExtra("facultyCode", userKey);
-            intent.putExtra("userFlag", Enumerations.User.Student.getEnumDescription());
+            intent.putExtra("userFlag", Enumerations.User.Faculty.getEnumDescription());
         }
         intent.putExtra("menuFlag", 0);
         startActivity(intent);
         finish();
     }
 
+    /// Method to set controls visibility
     private void setControlsVisibility() {
         TextView tvOtpMessage, tvEnterOtp;
 
@@ -218,8 +227,9 @@ public class ForgotPassword extends AppCompatActivity {
         btnVerifyOtp.setVisibility(View.VISIBLE);
     }
 
-    private  void setPhoneAuthCallBack(){
-        phoneAuthCallBack = new PhoneAuthCallBack(){
+    /// Method to set phone auth call back
+    private void setPhoneAuthCallBack() {
+        phoneAuthCallBack = new PhoneAuthCallBack() {
             @Override
             public OnSuccessListener<? super AuthResult> onVerificationCompleted() {
                 //pd.setMessage("Logging In");
@@ -236,10 +246,9 @@ public class ForgotPassword extends AppCompatActivity {
             }
 
             @Override
-            public OnFailureListener onVerificationFailed(Exception e) {
+            public void onVerificationFailed(Exception e) {
                 progressDialog.dismiss();
                 toast.ShowShortMessage(e.getMessage());
-                return null;
             }
 
             @Override
@@ -251,4 +260,5 @@ public class ForgotPassword extends AppCompatActivity {
             }
         };
     }
+
 }
