@@ -13,7 +13,7 @@ public class ToastExtension {
     }
 
     /// Short Toast Message - Utility Method
-    public void ShowShortMessage(String toastMessage) {
+    public void showShortMessage(String toastMessage) {
         Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show();
     }
 
