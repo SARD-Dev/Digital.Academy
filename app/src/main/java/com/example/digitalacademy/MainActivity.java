@@ -99,10 +99,9 @@ public class MainActivity extends AppCompatActivity {
     private void networkCheck() {
         boolean isNetworkAvailable = isNetworkAvailable();
         if (isNetworkAvailable) {
-            //checkFirebaseConnection();
             checkVersionIdentifier();
         } else {
-            toast.ShowShortMessage("No Internet");
+            toast.showShortMessage("No Internet");
             String title = "Network Control Manager";
             String message = "No Internet is Connected. Please check your Internet Connection...";
             showAlertDialog(title, message);
@@ -146,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onError(String object) {
-                toast.ShowShortMessage(object);
+                toast.showShortMessage(object);
             }
         });
     }

@@ -21,7 +21,8 @@ import com.example.digitalacademy.Common.StringUtils;
 import com.example.digitalacademy.Common.Helpers.ToastExtension;
 import com.example.digitalacademy.Interface.FirebaseCallBack;
 import com.example.digitalacademy.Interface.PhoneAuthCallBack;
-import com.example.digitalacademy.Services.FirebaseService;
+import com.example.digitalacademy.Services.FacultyService;
+import com.example.digitalacademy.Services.StudentService;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthResult;
@@ -30,7 +31,6 @@ public class ForgotPassword extends AppCompatActivity {
     private ToastExtension toast;
     private String userFlag = "";
     private PhoneNumberAuthentication phoneNumberAuthentication;
-    private FirebaseService firebaseService;
     private ProgressDialogHelper progressDialog;
     private PhoneAuthCallBack phoneAuthCallBack;
     private String phoneNumber = "";
@@ -40,6 +40,9 @@ public class ForgotPassword extends AppCompatActivity {
     private Button btnVerifyOtp;
     private EditText etOtp;
     private TextView tvPhoneNumber;
+
+    private StudentService studentService;
+    private FacultyService facultyService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +60,8 @@ public class ForgotPassword extends AppCompatActivity {
     /// Method to create event
     private void onCreateEvent() {
         this.toast = new ToastExtension(this);
-        this.firebaseService = new FirebaseService();
+        this.studentService = new StudentService();
+        this.facultyService = new FacultyService();
         this.progressDialog = new ProgressDialogHelper(this);
 
         this.assignControlInstances();
@@ -116,13 +120,13 @@ public class ForgotPassword extends AppCompatActivity {
                 this.getFacultyPhoneNumber(userKey);
             }
         } else {
-            toast.ShowShortMessage("Please enter a valid key");
+            toast.showShortMessage("Please enter a valid key");
         }
     }
 
     /// Method to get student phone number
     private void getStudentPhoneNumber(String registerNumber) {
-        firebaseService.getStudentPhoneNumber(registerNumber, new FirebaseCallBack<>() {
+        studentService.getPhoneNumber(registerNumber, new FirebaseCallBack<>() {
 
             @Override
             public void onSuccess(String object) {
@@ -131,14 +135,14 @@ public class ForgotPassword extends AppCompatActivity {
 
             @Override
             public void onError(String object) {
-                toast.ShowShortMessage(object);
+                toast.showShortMessage(object);
             }
         });
     }
 
     /// Method to get faculty phone number
     private void getFacultyPhoneNumber(String facultyCode) {
-        firebaseService.getFacultyPhoneNumber(facultyCode, new FirebaseCallBack<>() {
+        facultyService.getFacultyPhoneNumber(facultyCode, new FirebaseCallBack<>() {
 
             @Override
             public void onSuccess(String object) {
@@ -147,7 +151,7 @@ public class ForgotPassword extends AppCompatActivity {
 
             @Override
             public void onError(String object) {
-                toast.ShowShortMessage(object);
+                toast.showShortMessage(object);
             }
         });
     }
@@ -158,7 +162,7 @@ public class ForgotPassword extends AppCompatActivity {
         if (StringUtils.hasText(code)) {
             this.verifyPhoneNumberWithCode(code);
         } else {
-            toast.ShowShortMessage("Please Enter Verification Code");
+            toast.showShortMessage("Please Enter Verification Code");
         }
     }
 
@@ -233,7 +237,7 @@ public class ForgotPassword extends AppCompatActivity {
             @Override
             public OnSuccessListener<? super AuthResult> onVerificationCompleted() {
                 //pd.setMessage("Logging In");
-                toast.ShowShortMessage("Logging In");
+                toast.showShortMessage("Logging In");
                 openChangePasswordScreen();
                 progressDialog.dismiss();
                 return null;
@@ -248,7 +252,7 @@ public class ForgotPassword extends AppCompatActivity {
             @Override
             public void onVerificationFailed(Exception e) {
                 progressDialog.dismiss();
-                toast.ShowShortMessage(e.getMessage());
+                toast.showShortMessage(e.getMessage());
             }
 
             @Override
@@ -256,7 +260,7 @@ public class ForgotPassword extends AppCompatActivity {
                 setControlsVisibility();
                 tvPhoneNumber.setText(phoneNumber);
                 progressDialog.dismiss();
-                toast.ShowShortMessage("Verification code sent");
+                toast.showShortMessage("Verification code sent");
             }
         };
     }
