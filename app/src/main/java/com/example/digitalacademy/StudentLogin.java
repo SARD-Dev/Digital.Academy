@@ -8,25 +8,23 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.digitalacademy.Common.Enumerations;
 import com.example.digitalacademy.Common.StringUtils;
 import com.example.digitalacademy.Common.Helpers.ToastExtension;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
+import com.example.digitalacademy.Interface.FirebaseCallBack;
+import com.example.digitalacademy.Services.StudentService;
 
 public class StudentLogin extends AppCompatActivity {
 
     private String registerNumber = "", password = "", studentName = "";
     private ToastExtension toast;
+    private StudentService studentService;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,35 +36,40 @@ public class StudentLogin extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        this.OnCreateEvents();
+        this.onCreateEvents();
     }
 
-    private void OnCreateEvents(){
-        toast = new ToastExtension(this);
-        this.AssignEvents();
+    /// Event - On Create
+    private void onCreateEvents(){
+        this.toast = new ToastExtension(this);
+        this.studentService = new StudentService();
+        this.assignEvents();
     }
 
-    private void AssignEvents() {
+    /// Method to assign events to buttons
+    private void assignEvents() {
         Button btnLogin = findViewById(R.id.btnLogin);
         Button btnSignUp = findViewById(R.id.btnSignUp);
         TextView tvForgotPassword = findViewById(R.id.tvForgotPassword);
 
-        btnLogin.setOnClickListener(v -> LoginEvent());
+        btnLogin.setOnClickListener(v -> loginEvent());
         btnSignUp.setOnClickListener(v -> StudentLogin.this.startActivity(new Intent(StudentLogin.this, StudentSignUp.class)));
-        tvForgotPassword.setOnClickListener(v -> ForgotPasswordEvent());
+        tvForgotPassword.setOnClickListener(v -> forgotPasswordEvent());
 
         tvForgotPassword.setPaintFlags(tvForgotPassword.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
     }
 
-    private void LoginEvent() {
-        GetControlValues();
-        boolean isValid = ValidateControlValues();
+    /// Method to login
+    private void loginEvent() {
+        getControlValues();
+        boolean isValid = validateControlValues();
         if (isValid) {
-            LoginProcess();
+            loginProcess();
         }
     }
 
-    private void GetControlValues() {
+    /// Method to get control values
+    private void getControlValues() {
         EditText etRegisterNumber, etPassword;
         etRegisterNumber = findViewById(R.id.etRegisterNumber);
         etPassword = findViewById(R.id.etPassword);
@@ -74,65 +77,75 @@ public class StudentLogin extends AppCompatActivity {
         password = etPassword.getText().toString();
     }
 
-    private boolean ValidateControlValues() {
+    /// Method to validate control values
+    private boolean validateControlValues() {
         if (StringUtils.isNullOrBlank((registerNumber))) {
-            toast.ShowShortMessage("Please enter register number to proceed.");
+            toast.showShortMessage("Please enter register number to proceed.");
             return false;
         }
         if (StringUtils.isNullOrBlank((password))) {
-            toast.ShowShortMessage("Please enter password to proceed.");
+            toast.showShortMessage("Please enter password to proceed.");
             return false;
         }
         return true;
     }
 
-    private void LoginProcess() {
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        DatabaseReference databaseReference = firebaseDatabase.getReference("StudentInfo");
-
+    /// Method to login
+    private void loginProcess() {
         if (StringUtils.hasText((registerNumber)) && StringUtils.hasText(password)) {
-            Query checkUser = databaseReference.orderByChild("regNo").equalTo(registerNumber);
-
-            checkUser.addListenerForSingleValueEvent(new ValueEventListener() {
+            studentService.getPassword(registerNumber, new FirebaseCallBack<>() {
                 @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    ValidateLogin(dataSnapshot);
+                public void onSuccess(String object) {
+                    validateLogin(object);
                 }
 
                 @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    toast.ShowShortMessage("Fail to get data " + databaseError);
+                public void onError(String object) {
+                    toast.showShortMessage(object);
                 }
             });
         }
     }
 
-    private void ValidateLogin(DataSnapshot dataSnapshot){
-        if (dataSnapshot.exists()) {
-            String passwordFromDB = dataSnapshot.child(registerNumber).child("password").getValue(String.class);
-            studentName = dataSnapshot.child(registerNumber).child("firstName").getValue(String.class);
-            if (passwordFromDB != null && passwordFromDB.equals(password)) {
-                OpenHomePage();
+    /// Method to validate login
+    private void validateLogin(String password) {
+        if (StringUtils.hasText(password)) {
+            if (password.equals(this.password)) {
+                studentService.getFirstName(registerNumber, new FirebaseCallBack<>() {
+                    @Override
+                    public void onSuccess(String object) {
+                        studentName = object;
+                        openHomePage();
+                    }
+
+                    @Override
+                    public void onError(String object) {
+                        toast.showShortMessage(object);
+                    }
+                });
             } else {
-                toast.ShowShortMessage("Wrong Password");
+                toast.showShortMessage("Wrong Password");
             }
         } else {
-            toast.ShowShortMessage("Account not found");
+            toast.showShortMessage("Account not found");
         }
     }
 
-    private void ForgotPasswordEvent(){
+    /// Method to open forgot password page
+    private void forgotPasswordEvent(){
         Intent intent = new Intent(StudentLogin.this, ForgotPassword.class);
-        intent.putExtra("userFlag", "S");
+        intent.putExtra("userFlag", Enumerations.User.Student.getEnumDescription());
         startActivity(intent);
     }
 
-    private void OpenHomePage(){
+    /// Method to open home page
+    private void openHomePage(){
         Intent intent = new Intent(StudentLogin.this, HomePage.class);
         intent.putExtra("studentRegisterNumber", registerNumber);
         intent.putExtra("studentName", studentName);
-        intent.putExtra("userFlag", "S");
+        intent.putExtra("userFlag", Enumerations.User.Student.getEnumDescription());
         startActivity(intent);
         finish();
     }
+
 }
