@@ -21,6 +21,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.digitalacademy.Common.Enumerations;
 import com.example.digitalacademy.Common.Helpers.AlertDialogHelper;
 import com.example.digitalacademy.Common.StringUtils;
 import com.example.digitalacademy.Common.Helpers.ToastExtension;
@@ -33,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
     private ToastExtension toast;
     private FirebaseService firebaseService;
     private AlertDialogHelper alertDialog;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
         this.toast = new ToastExtension(this);
         this.firebaseService = new FirebaseService();
         this.alertDialog = new AlertDialogHelper(this);
-
         this.assignEvents();
     }
 
@@ -71,13 +70,13 @@ public class MainActivity extends AppCompatActivity {
 
     /// Method to assign events to buttons
     private void assignEvents() {
-        btnStudentLogin = findViewById(R.id.btnStudentLogin);
-        btnFacultyLogin = findViewById(R.id.btnFacultyLogin);
-        btnAdminLogin = findViewById(R.id.btnAdminLogin);
+        this.btnStudentLogin = findViewById(R.id.btnStudentLogin);
+        this.btnFacultyLogin = findViewById(R.id.btnFacultyLogin);
+        this.btnAdminLogin = findViewById(R.id.btnAdminLogin);
 
-        btnStudentLogin.setOnClickListener(v -> startActivity(new Intent(this, StudentLogin.class)));
-        btnFacultyLogin.setOnClickListener(v -> startActivity(new Intent(this, FacultyLogin.class)));
-        btnAdminLogin.setOnClickListener(v -> startActivity(new Intent(this, AdminLogin.class)));
+        this.btnStudentLogin.setOnClickListener(v -> openLoginScreen(Enumerations.User.Student));
+        this.btnFacultyLogin.setOnClickListener(v -> openLoginScreen(Enumerations.User.Faculty));
+        this.btnAdminLogin.setOnClickListener(v -> openLoginScreen(Enumerations.User.Admin));
     }
 
     /// Method to decorate organization name in main page
@@ -99,12 +98,12 @@ public class MainActivity extends AppCompatActivity {
     private void networkCheck() {
         boolean isNetworkAvailable = isNetworkAvailable();
         if (isNetworkAvailable) {
-            checkVersionIdentifier();
+            this.checkVersionIdentifier();
         } else {
-            toast.showShortMessage("No Internet");
+            this.toast.showShortMessage("No Internet");
             String title = "Network Control Manager";
             String message = "No Internet is Connected. Please check your Internet Connection...";
-            showAlertDialog(title, message);
+            this.showAlertDialog(title, message);
         }
     }
 
@@ -127,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
 
     /// Method to validate application version while opening
     private void checkVersionIdentifier() {
-        firebaseService.checkVersionIdentifier(new FirebaseCallBack<>() {
+        this.firebaseService.checkVersionIdentifier(new FirebaseCallBack<>() {
             @Override
             public void onSuccess(String object) {
                 if (StringUtils.equals(object, "1")) {
@@ -156,6 +155,13 @@ public class MainActivity extends AppCompatActivity {
             this.finish();
             System.exit(0);
         });
+    }
+
+    /// Method to open login screen
+    private void openLoginScreen(Enumerations.User userFlag) {
+        Intent loginScreenIntent = new Intent(this, LoginScreen.class);
+        loginScreenIntent.putExtra("userFlag", userFlag);
+        startActivity(loginScreenIntent);
     }
 
 }

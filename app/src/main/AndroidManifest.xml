@@ -11,6 +11,24 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DigitalAcademy">
         <activity
+            android:name=".EditFacultyInfo"
+            android:exported="false" />
+        <activity
+            android:name=".EditStudentInfo"
+            android:exported="false" />
+        <activity
+            android:name=".InfoPage"
+            android:exported="false" />
+        <activity
+            android:name=".AdminHomePage"
+            android:exported="false" />
+        <activity
+            android:name=".LoginScreen"
+            android:exported="false" />
+        <activity
+            android:name=".ListViewScreen"
+            android:exported="false" />
+        <activity
             android:name=".ChangePassword"
             android:exported="false" />
         <activity
@@ -30,15 +48,6 @@
             android:exported="false" />
         <activity
             android:name=".HomePage"
-            android:exported="false" />
-        <activity
-            android:name=".AdminLogin"
-            android:exported="false" />
-        <activity
-            android:name=".FacultyLogin"
-            android:exported="false" />
-        <activity
-            android:name=".StudentLogin"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

@@ -7,7 +7,7 @@ import androidx.fragment.app.DialogFragment;
 
 import com.example.digitalacademy.Common.Enumerations;
 
-public class AlertDialogHelper extends DialogFragment {
+public class AlertDialogHelper { //extends DialogFragment {
 
     private final Activity activity;
     private AlertDialog.Builder builder;
@@ -33,6 +33,20 @@ public class AlertDialogHelper extends DialogFragment {
                                    DialogCallback positiveAction,
                                    DialogCallback negativeAction) {
         this.showDialog(title, message, positiveAction, negativeAction, Enumerations.DialogTypes.Question);
+    }
+
+    public void showOptionsDialog(String title,
+                                  String[] options,
+                                  DialogCallback[] actions) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle(title);
+        builder.setItems(options, (dialog, which) -> {
+            dialog.dismiss();
+            if (actions != null && actions[which] != null) {
+                actions[which].onAction();
+            }
+        });
+        builder.show();
     }
 
     /// Method to show dialog

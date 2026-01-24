@@ -7,6 +7,6 @@ import com.google.firebase.auth.AuthResult;
 public interface PhoneAuthCallBack {
     OnSuccessListener<? super AuthResult> onVerificationCompleted();
     OnFailureListener onVerificationFailed();
-    OnFailureListener onVerificationFailed(Exception e);
+    void onVerificationFailed(Exception e);
     void onCodeSent();
 }

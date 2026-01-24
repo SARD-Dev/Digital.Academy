@@ -2,28 +2,28 @@ package com.example.digitalacademy;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.digitalacademy.Common.StringUtils;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.example.digitalacademy.Common.Enumerations;
+import com.example.digitalacademy.Common.Helpers.ToastExtension;
+import com.example.digitalacademy.Interface.FirebaseCallBack;
+import com.example.digitalacademy.Services.FirebaseService;
 
 public class HomePage extends AppCompatActivity {
-    private String registerNumberFromLogin = "";
+    private String loginKey = "";
     private String collegeName = "";
+    private String collegeCode = "";
+    private Enumerations.User userFlag;
+    private ToastExtension toast;
+    private String userName = "";
+    private FirebaseService firebaseService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,11 +36,14 @@ public class HomePage extends AppCompatActivity {
             return insets;
         });
 
-        this.AssignEvents();
-        this.DisplayNameAndCollege();
+        toast = new ToastExtension(HomePage.this);
+        firebaseService = new FirebaseService();
+        this.assignEvents();
+        this.displayNameAndCollege();
     }
 
-    private void AssignEvents() {
+    /// Method to assign events
+    private void assignEvents() {
         Button btnNotes, btnGradeCalculation, btnAttendance, btnCircular, btnInfo, btnAboutUs;
 
         btnNotes = findViewById(R.id.btnNotes);
@@ -50,162 +53,147 @@ public class HomePage extends AppCompatActivity {
         btnInfo = findViewById(R.id.btnInfo);
         btnAboutUs = findViewById(R.id.btnAboutUs);
 
-        btnNotes.setOnClickListener(v -> OpenNotesScreen());
-        btnGradeCalculation.setOnClickListener(v -> OpenGradeCalculationScreen());
-        btnAttendance.setOnClickListener(v -> OpenAttendanceScreen());
-        btnCircular.setOnClickListener(v -> OpenCircularScreen());
-        btnInfo.setOnClickListener(v -> OpenInfoScreen());
-        btnAboutUs.setOnClickListener(v -> OpenAboutUsScreen());
+        btnNotes.setOnClickListener(v -> openNotesScreen());
+        btnGradeCalculation.setOnClickListener(v -> openGradeCalculationScreen());
+        btnAttendance.setOnClickListener(v -> openAttendanceScreen());
+        btnCircular.setOnClickListener(v -> openCircularScreen());
+        btnInfo.setOnClickListener(v -> openInfoScreen());
+        btnAboutUs.setOnClickListener(v -> openAboutUsScreen());
     }
 
-    private void DisplayNameAndCollege() {
+    /// Method to display name and college
+    private void displayNameAndCollege() {
         Intent intent = getIntent();
-        int intentFlagFromLogin;
 
-        intentFlagFromLogin = intent.getIntExtra("UserFlag", 0);
+        var user = intent.getSerializableExtra("userFlag");
+        if (user instanceof Enumerations.User) {
+            this.userFlag = (Enumerations.User) user;
+        }
 
-        if (intentFlagFromLogin == 0) {
-            this.GetStudentDetailsFromIntent(intent);
-        } else if (intentFlagFromLogin == 1) {
-            this.GetFacultyDetailsFromIntent(intent);
-        } else {
-            Toast.makeText(HomePage.this, "Invalid User Found --- May be an error", Toast.LENGTH_SHORT).show();
+        switch (userFlag){
+            case Student:
+            case Faculty:
+                this.getIntentDetails(intent);
+                break;
+            default:
+                toast.showShortMessage("Invalid User Flag");
+                break;
         }
     }
 
-    private void GetStudentDetailsFromIntent(Intent intent) {
-        String studentNameFromLogin, collegeCode = "";
+    /// Method to get intent values
+    private void getIntentDetails(Intent intent) {
+        loginKey = intent.getStringExtra("loginKey");
+        userName = intent.getStringExtra("userName");
+        collegeCode = intent.getStringExtra("collegeCode");
 
-        registerNumberFromLogin = intent.getStringExtra("srn");
-        studentNameFromLogin = intent.getStringExtra("snm");
-
-        if (StringUtils.HasText(registerNumberFromLogin)) {
-            collegeCode = registerNumberFromLogin.substring(0, 4);
-        }
-
-        this.GetCollegeName(collegeCode);
-        this.SetUserName(studentNameFromLogin);
+        this.getCollegeName();
+        this.setUserName(userName);
     }
 
-    private void GetFacultyDetailsFromIntent(Intent intent) {
-        String facultyCodeFromLogin, facultyNameFromLogin, collegeCode;
-
-        facultyCodeFromLogin = intent.getStringExtra("fcn");
-        facultyNameFromLogin = intent.getStringExtra("fnm");
-        collegeCode = intent.getStringExtra("FclgCode");
-
-        this.GetCollegeName(collegeCode);
-        this.SetUserName(facultyNameFromLogin);
-    }
-
-    private void GetCollegeName(String collegeCode) {
+    /// Method to get college name
+    private void getCollegeName() {
         TextView tvCollegeName = findViewById(R.id.tvCollegeName);
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        DatabaseReference collegeDataReference;
 
-        collegeDataReference = firebaseDatabase.getReference("CollegeInfo").child(collegeCode);
-        collegeDataReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        firebaseService.getCollegeName(collegeCode, new FirebaseCallBack<>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                collegeName = dataSnapshot.child("colgName").getValue().toString();
+            public void onSuccess(String object) {
+                collegeName = object;
                 tvCollegeName.setText(collegeName);
             }
+
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(HomePage.this, "Database Error", Toast.LENGTH_SHORT).show();
+            public void onError(String object) {
+                toast.showShortMessage(object);
             }
         });
     }
 
-    private void SetUserName(String name) {
+    /// Method to set user name
+    private void setUserName(String name) {
         TextView tvStudentName;
         tvStudentName = findViewById(R.id.tvStudentName);
-        tvStudentName.setText("Hi, " + name);
+        tvStudentName.setText(String.format("Hi, %s", name));
     }
 
-    private void OpenNotesScreen() {
-//        Intent attendancedetailselect = new Intent(homepage.this, attendancedetailselect.class);
-//        attendancedetailselect.putExtra("collegeName", colgNamefromDB);
-//        attendancedetailselect.putExtra("collegeCode", colgcode);
-//        attendancedetailselect.putExtra("menuFlag", 1);
-//        attendancedetailselect.putExtra("Flag", flagfromlogin);
-//        startActivity(attendancedetailselect);
+    /// Method to open notes screen
+    private void openNotesScreen() {
+        Intent intent = new Intent(HomePage.this, InformationSelect.class);
+        intent.putExtra("collegeName", collegeName);
+        intent.putExtra("collegeCode", collegeCode);
+        intent.putExtra("menuFlag", Enumerations.MenuType.Notes);
+        intent.putExtra("userFlag", userFlag);
+        startActivity(intent);
     }
 
-    private void OpenGradeCalculationScreen() {
-//        if (flagfromlogin == 0) {
-            String departmentCode = registerNumberFromLogin.substring(6, 9);
+    /// Method to open grade calculation screen
+    private void openGradeCalculationScreen() {
+        if (userFlag.equals(Enumerations.User.Student)) {
+            String departmentCode = loginKey.substring(6, 9);
 
-            DatabaseReference deptdatabaseReference = FirebaseDatabase.getInstance().getReference("DepartmentInfo").child(departmentCode);
-
-            deptdatabaseReference.addListenerForSingleValueEvent (new ValueEventListener() {
+            firebaseService.getDepartmentName(departmentCode, new FirebaseCallBack<>() {
                 @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    String deptname = dataSnapshot.child("deptName").getValue().toString();
-
-                    //......................................................................
-                    Intent gradecalc = new Intent(getApplicationContext(), GradeCalculation.class);
-                    gradecalc.putExtra("dptname", deptname);
-                    gradecalc.putExtra("department", departmentCode);
-                    gradecalc.putExtra("collegeName", collegeName);
-                   startActivity(gradecalc);
-                    //......................................................................
-
+                public void onSuccess(String object) {
+                    Intent gradeCalculation = new Intent(HomePage.this, GradeCalculation.class);
+                    gradeCalculation.putExtra("departmentName", object);
+                    gradeCalculation.putExtra("departmentCode", departmentCode);
+                    gradeCalculation.putExtra("collegeName", collegeName);
+                    startActivity(gradeCalculation);
                 }
+
                 @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Toast.makeText(HomePage.this, "Firebase connection was cancelled", Toast.LENGTH_SHORT).show();
+                public void onError(String object) {
+                    toast.showShortMessage(object);
                 }
             });
-//
-//        } else if (flagfromlogin == 1){
-//
-//            Intent otherdeptselect = new Intent(getApplicationContext(), otherdeptselect.class);
-//            otherdeptselect.putExtra("collegeName", colgNamefromDB);
-//            startActivity(otherdeptselect);
-//        }
-//    }
+        } else if (userFlag.equals(Enumerations.User.Faculty)) {
+            Intent informationSelect = new Intent(HomePage.this, InformationSelect.class);
+            informationSelect.putExtra("collegeName", informationSelect);
+            startActivity(informationSelect);
+        }
     }
 
-    private void OpenAttendanceScreen() {
-//        if(flagfromlogin == 0){
-//            Intent StudentAttendanceListView = new Intent(homepage.this, StudentAttendanceListView.class);
-//            StudentAttendanceListView.putExtra("name", sNamefromlogin);
-//            StudentAttendanceListView.putExtra("regNo", regNofromlogin);
-//            startActivity(StudentAttendanceListView);
-//
-//        }
-//        else if (flagfromlogin == 1){
-//            Intent attendancedetailselect = new Intent(homepage.this, attendancedetailselect.class);
-//            attendancedetailselect.putExtra("collegeName", colgNamefromDB);
-//            attendancedetailselect.putExtra("collegeCode", colgcode);
-//            attendancedetailselect.putExtra("menuFlag", 3);
-//            startActivity(attendancedetailselect);
-//        }
+    /// Method to open attendance screen
+    private void openAttendanceScreen() {
+        if (userFlag.equals(Enumerations.User.Student)) {
+            Intent circularScreen = new Intent(this, CircularScreen.class);
+            circularScreen.putExtra("userName", userName);
+            circularScreen.putExtra("loginKey", loginKey);
+            startActivity(circularScreen);
+        } else if (userFlag.equals(Enumerations.User.Faculty)) {
+            Intent intent = new Intent(HomePage.this, InformationSelect.class);
+            intent.putExtra("collegeName", collegeName);
+            intent.putExtra("collegeCode", collegeCode);
+            intent.putExtra("menuFlag", Enumerations.MenuType.Attendance);
+            startActivity(intent);
+        }
     }
 
-    private void OpenCircularScreen() {
-//        Intent circular_listview = new Intent(homepage.this, circular_listview.class);
-//        circular_listview.putExtra("CollegeName", colgNamefromDB);
-//        circular_listview.putExtra("CollegeCode", colgcode);
-//        circular_listview.putExtra("Flag", flagfromlogin);
-//        startActivity(circular_listview);
+    /// Method to open circular screen
+    private void openCircularScreen() {
+        Intent intent = new Intent(HomePage.this, ListViewScreen.class);
+        intent.putExtra("collegeName", collegeName);
+        intent.putExtra("collegeCode", collegeCode);
+        intent.putExtra("userFlag", userFlag);
+        startActivity(intent);
     }
 
-    private void OpenInfoScreen() {
-//        if (flagfromlogin == 0){
-//            Intent studentinfoedit = new Intent(homepage.this, studentinfoedit.class);
-//            studentinfoedit.putExtra("regno", regNofromlogin);
-//            startActivity(studentinfoedit);
-//        }else if (flagfromlogin == 1){
-//            Intent facultyinfoedit = new Intent(homepage.this, facultyinfoedit.class);
-//            facultyinfoedit.putExtra("fcode", fCodefromlogin);
-//            startActivity(facultyinfoedit);
-//        }
+    /// Method to open info screen
+    private void openInfoScreen() {
+        if (userFlag.equals(Enumerations.User.Student)){
+            Intent editStudentInfo = new Intent(HomePage.this, EditStudentInfo.class);
+            editStudentInfo.putExtra("registerNumber", loginKey);
+            startActivity(editStudentInfo);
+        }else if (userFlag.equals(Enumerations.User.Faculty)){
+            Intent editFacultyInfo = new Intent(HomePage.this, EditFacultyInfo.class);
+            editFacultyInfo.putExtra("facultyCode", loginKey);
+            startActivity(editFacultyInfo);
+        }
     }
 
-    private void OpenAboutUsScreen() {
-//        Intent intent1 = new Intent(homepage.this, infopage.class);
-//        startActivity(intent1);
+    /// Method to open about us screen
+    private void openAboutUsScreen() {
+        Intent intent1 = new Intent(HomePage.this, InfoPage.class);
+        startActivity(intent1);
     }
 }
