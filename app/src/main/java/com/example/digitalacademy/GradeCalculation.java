@@ -1,7 +1,6 @@
 package com.example.digitalacademy;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,36 +11,32 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.digitalacademy.Common.ContainerClasses.TextViewSpinner;
-import com.example.digitalacademy.Common.ToastExtension;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.example.digitalacademy.Common.Helpers.ToastExtension;
+import com.example.digitalacademy.Interface.FirebaseCallBack;
+import com.example.digitalacademy.Services.FirebaseService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class GradeCalculation extends AppCompatActivity {
 
-    private String departmentName;
     private String departmentCode;
     private String collegeName;
     private ToastExtension toast;
     private HashMap<String, String> subjectCreditPairs = new HashMap<>();
-    private List<TextViewSpinner> subjectGradeList = new ArrayList<>();
+    private final List<TextViewSpinner> subjectGradeList = new ArrayList<>();
+    private FirebaseService firebaseService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,75 +50,72 @@ public class GradeCalculation extends AppCompatActivity {
         });
 
         toast = new ToastExtension(GradeCalculation.this);
+        firebaseService = new FirebaseService();
 
-        this.GetIntentData();
-        this.LoadSemesterSpinner();
-        this.AssignEvents();
+        this.getIntentData();
+        this.loadSemesterSpinner();
+        this.assignEvents();
     }
 
-    private void GetIntentData() {
+    /// Method to get intent data
+    private void getIntentData() {
         Intent intent = getIntent();
-        departmentName = intent.getStringExtra("dptname");
-        departmentCode = intent.getStringExtra("department");
+        String departmentName = intent.getStringExtra("departmentName");
+        departmentCode = intent.getStringExtra("departmentCode");
         collegeName = intent.getStringExtra("collegeName");
 
         TextView tvDepartment = findViewById(R.id.tvDepartment);
         tvDepartment.setText(departmentName);
     }
 
-    private void LoadSemesterSpinner() {
+    /// Method to load semester spinner
+    private void loadSemesterSpinner() {
         Spinner spnSemester = findViewById(R.id.spnSemester);
         String[] semesters = {"1", "2", "3", "4", "5", "6", "7", "8"};
-        spnSemester.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, semesters));
+        spnSemester.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, semesters));
     }
 
-    private void AssignEvents() {
+    /// Method to assign events
+    private void assignEvents() {
         Button btnCalculateGpa = findViewById(R.id.btnCalculateGpa);
         Button btnOtherDepartment = findViewById(R.id.btnOtherDepartment);
         Spinner spnSemester = findViewById(R.id.spnSemester);
 
-        btnCalculateGpa.setOnClickListener(v -> CalculateGpaEvent());
-        btnOtherDepartment.setOnClickListener(v -> OpenOtherDepartmentSelection());
+        btnCalculateGpa.setOnClickListener(v -> calculateGpaEvent());
+        btnOtherDepartment.setOnClickListener(v -> openOtherDepartmentSelection());
 
         spnSemester.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String semester = parent.getItemAtPosition(position).toString();
-                GetSubjectsAndCredits(semester);
-                InitializeSubjectGradeView();
+                getSubjectsAndCredits(semester);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                Toast.makeText(GradeCalculation.this, "Select a semester to continue", Toast.LENGTH_SHORT).show();
+                toast.showShortMessage("Select a semester to continue");
             }
         });
     }
 
-    private void GetSubjectsAndCredits(String semester) {
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("GradeInfo").child(departmentCode).child(semester);
-
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+    /// Method to get subjects and credits
+    private void getSubjectsAndCredits(String semester) {
+        firebaseService.getSubjectsAndGrade(departmentCode, semester, new FirebaseCallBack<>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                subjectCreditPairs = new HashMap<>();
-                for (DataSnapshot subjectObject : dataSnapshot.getChildren()) {
-                    String subject = subjectObject.getKey();
-
-                    var creditObject = subjectObject.child("credit").getValue();
-                    String credit = creditObject != null ? creditObject.toString() : null;
-                    subjectCreditPairs.put(subject, credit);
-                }
+            public void onSuccess(HashMap<String, String> object) {
+                subjectCreditPairs = object;
+                initializeSubjectGradeView();
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                toast.ShowShortMessage("Firebase connection was cancelled");
+            public void onError(String object) {
+                toast.showShortMessage(object);
             }
         });
     }
 
-    private void InitializeSubjectGradeView() {
+    /// Method to initialize subject grade view
+    private void initializeSubjectGradeView() {
         LinearLayout linearLayout = findViewById(R.id.subjectGradeView);
         String[] grades = {"O", "A+", "A", "B+", "B", "U"};
 
@@ -133,7 +125,7 @@ public class GradeCalculation extends AppCompatActivity {
             Spinner spnGrade = itemView.findViewById(R.id.spinnerData);
 
             tvSubject.setText(subjectCreditPair.getKey());
-            spnGrade.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, grades));
+            spnGrade.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, grades));
 
             TextViewSpinner subjectGradePair = new TextViewSpinner(subjectCreditPair.getKey(), grades[0]);
             subjectGradeList.add(subjectGradePair);
@@ -154,31 +146,34 @@ public class GradeCalculation extends AppCompatActivity {
         }
     }
 
-    private void CalculateGpaEvent() {
+    /// Method to calculate GPA
+    private void calculateGpaEvent() {
         float gpa;
-        float gpaNumerator = 0, gpaDinomenator = 0, tempCredit = 0;
+        float gpaNumerator = 0, gpaDenominator = 0, tempCredit;
         for (TextViewSpinner subjectGradePair : subjectGradeList) {
             String grade = subjectGradePair.GetSelectedValue();
             String subjectCode = subjectGradePair.GetText();
             String credit = subjectCreditPairs.get(subjectCode);
-            int gradePoint = this.GetGradePoints(grade);
+            int gradePoint = this.getGradePoints(grade);
 
             try {
-                tempCredit = Integer.parseInt(credit);
+                tempCredit = Integer.parseInt(Objects.requireNonNull(credit));
                 gpaNumerator += tempCredit * gradePoint;
-                gpaDinomenator += tempCredit;
-                gpa = gpaNumerator / gpaDinomenator;
-                float roundedGpa = (float) ((float) Math.round(gpa * 100.0) / 100.0);
-                String tempGpa = Float.toString(roundedGpa);
+                gpaDenominator += tempCredit;
 
-                AlertDialog(tempGpa);
             } catch (Exception e) {
-                Toast.makeText(GradeCalculation.this, "Error - " + e, Toast.LENGTH_SHORT).show();
+                toast.showShortMessage(e.getMessage());
             }
         }
+        gpa = gpaNumerator / gpaDenominator;
+        float roundedGpa = (float) ((float) Math.round(gpa * 100.0) / 100.0);
+        String tempGpa = Float.toString(roundedGpa);
+
+        this.alertDialog(tempGpa);
     }
 
-    private int GetGradePoints(String grade) {
+    /// Method to get grade points
+    private int getGradePoints(String grade) {
         int gradePoint = 0;
 
         switch (grade) {
@@ -200,29 +195,26 @@ public class GradeCalculation extends AppCompatActivity {
             case "U":
                 break;
             default:
-                Toast.makeText(GradeCalculation.this, "Unknown Grade : " + grade, Toast.LENGTH_SHORT).show();
+                toast.showShortMessage("Unknown Grade : " + grade);
+                break;
         }
         return gradePoint;
     }
 
-    private void OpenOtherDepartmentSelection() {
-//        Intent otherdeptselect = new Intent(getApplicationContext(), otherdeptselect.class);
-//        otherdeptselect.putExtra("collegeName", collegeName);
-//        startActivity(otherdeptselect);
+    /// Method to open other department selection
+    private void openOtherDepartmentSelection() {
+        Intent informationSelect = new Intent(GradeCalculation.this, InformationSelect.class);
+        informationSelect.putExtra("collegeName", collegeName);
+        startActivity(informationSelect);
     }
 
-
-    private void AlertDialog(String gpa){
+    /// Method to show alert dialog
+    private void alertDialog(String gpa){
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         dialog.setMessage("Your GPA is " + gpa);
         dialog.setTitle("GPA CALCULATOR");
         dialog.setPositiveButton("OK",
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
+                (dialog1, which) -> dialog1.dismiss());
         AlertDialog alertDialog=dialog.create();
         alertDialog.setCancelable(false);
         alertDialog.setCanceledOnTouchOutside(false);

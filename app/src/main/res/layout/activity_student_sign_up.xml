@@ -5,25 +5,22 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg_sign_up"
     android:orientation="vertical"
     tools:context=".StudentSignUp">
-    <!--
-        android:background="@drawable/register"
-    -->
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/tvEnterAllData"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
         android:gravity="center_horizontal"
-        android:text="Enter all the data..."
+        android:text="@string/enter_all_the_data"
         android:textColor="#FFFFFF"
         android:textColorHighlight="#0E73E1"
         android:textColorLink="#E1DBDB"
         android:textSize="30sp"
         android:textStyle="italic" />
-
 
     <ScrollView
         android:layout_width="match_parent"
@@ -40,156 +37,132 @@
             android:padding="20dp"
             android:showDividers="middle">
 
+            <EditText
+                android:id="@+id/etFirstName"
+                android:layout_width="350dp"
+                android:layout_height="50dp"
+                android:layout_marginBottom="20dp"
+                android:autofillHints=""
+                android:background="#FFFFFF"
+                android:gravity="center_vertical"
+                android:hint="@string/first_name"
+                android:inputType="textPersonName"
+                android:textColor="@color/black"
+                android:textColorHint="#555555"
+                android:textSize="20sp" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="20dp">
+            <EditText
+                android:id="@+id/etLastName"
+                android:layout_width="350dp"
+                android:layout_height="50dp"
+                android:layout_marginBottom="20dp"
+                android:autofillHints=""
+                android:background="#FFFFFF"
+                android:ems="10"
+                android:hint="@string/last_name"
+                android:inputType="textPersonName"
+                android:paddingTop="10dp"
+                android:textColor="@color/black"
+                android:textColorHint="#555555" />
 
-                <EditText
-                    android:id="@+id/sfirstname"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:background="#FFFFFF"
-                    android:gravity="center_vertical"
-                    android:hint="First Name"
-                    android:inputType="textPersonName"
-                    android:textSize="20sp" />
-            </LinearLayout>
+            <EditText
+                android:id="@+id/etRegisterNumber"
+                android:layout_width="350dp"
+                android:layout_height="50dp"
+                android:layout_marginBottom="20dp"
+                android:autofillHints=""
+                android:background="#FFFFFF"
+                android:ems="10"
+                android:hint="@string/register_number"
+                android:inputType="number"
+                android:maxLength="12"
+                android:textColor="@color/black"
+                android:textColorHint="#555555" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="20dp">
+            <EditText
+                android:id="@+id/etDepartment"
+                android:layout_width="350dp"
+                android:layout_height="50dp"
+                android:layout_marginBottom="20dp"
+                android:autofillHints=""
+                android:background="#FFFFFF"
+                android:ems="10"
+                android:hint="@string/department"
+                android:inputType="textPersonName"
+                android:textColor="@color/black"
+                android:textColorHint="#555555" />
 
-                <EditText
-                    android:id="@+id/slastname"
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:background="#FFFFFF"
-                    android:ems="10"
-                    android:hint="Last Name :"
-                    android:inputType="textPersonName"
-                    android:paddingTop="10dp" />
-            </LinearLayout>
+            <EditText
+                android:id="@+id/etDob"
+                android:layout_width="350dp"
+                android:layout_height="50dp"
+                android:layout_marginBottom="20dp"
+                android:autofillHints=""
+                android:background="#FFFFFF"
+                android:ems="10"
+                android:hint="@string/d_o_b"
+                android:inputType="textPersonName"
+                android:textColor="@color/black"
+                android:textColorHint="#555555" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="20dp">
+            <EditText
+                android:id="@+id/etPhoneNumber"
+                android:layout_width="350dp"
+                android:layout_height="50dp"
+                android:layout_marginBottom="20dp"
+                android:autofillHints=""
+                android:background="#FFFFFF"
+                android:ems="10"
+                android:hint="@string/mobile_number"
+                android:inputType="phone"
+                android:maxLength="10"
+                android:textColor="@color/black"
+                android:textColorHint="#555555" />
 
-                <EditText
-                    android:id="@+id/sregno"
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:background="#FFFFFF"
-                    android:ems="10"
-                    android:hint="Register Number :"
-                    android:inputType="number"
-                    android:maxLength="12" />
-            </LinearLayout>
+            <EditText
+                android:id="@+id/etEmail"
+                android:layout_width="350dp"
+                android:layout_height="50dp"
+                android:layout_marginBottom="20dp"
+                android:autofillHints=""
+                android:background="#FFFFFF"
+                android:ems="10"
+                android:hint="@string/e_mail_id"
+                android:inputType="textEmailAddress"
+                android:textColor="@color/black"
+                android:textColorHint="#555555" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="20dp">
+            <EditText
+                android:id="@+id/etPassword"
+                android:layout_width="350dp"
+                android:layout_height="50dp"
+                android:layout_marginBottom="20dp"
+                android:autofillHints=""
+                android:background="#FFFFFF"
+                android:ems="10"
+                android:enabled="false"
+                android:hint="@string/create_password"
+                android:inputType="textPassword" />
 
-                <EditText
-                    android:id="@+id/sdepartment"
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:background="#FFFFFF"
-                    android:ems="10"
-                    android:hint="Department :"
-                    android:inputType="textPersonName" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="20dp">
-
-                <EditText
-                    android:id="@+id/sdob"
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:background="#FFFFFF"
-                    android:ems="10"
-                    android:hint="D-O-B :"
-                    android:inputType="textPersonName" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="20dp">
-
-                <EditText
-                    android:id="@+id/sphno"
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:background="#FFFFFF"
-                    android:ems="10"
-                    android:hint="Mobile Number:"
-                    android:inputType="textPersonName"
-                    android:maxLength="10" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="20dp">
-
-                <EditText
-                    android:id="@+id/semail"
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:background="#FFFFFF"
-                    android:ems="10"
-                    android:hint="E-Mail ID :"
-                    android:inputType="textPersonName" />
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="20dp">
-
-                <EditText
-                    android:id="@+id/scpass"
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:background="#FFFFFF"
-                    android:ems="10"
-                    android:enabled="false"
-                    android:hint="Create Password :"
-                    android:inputType="textPassword" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="30dp">
-
-                <EditText
-                    android:id="@+id/scnpass"
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:background="#FFFFFF"
-                    android:ems="10"
-                    android:enabled="false"
-                    android:hint="Confirm Password :"
-                    android:inputType="textPassword" />
-            </LinearLayout>
+            <EditText
+                android:id="@+id/etConfirmPassword"
+                android:layout_width="350dp"
+                android:layout_height="50dp"
+                android:layout_marginBottom="20dp"
+                android:autofillHints=""
+                android:background="#FFFFFF"
+                android:ems="10"
+                android:enabled="false"
+                android:hint="@string/confirm_password"
+                android:inputType="textPassword" />
 
             <Button
-                android:id="@+id/ssignupbtn2"
+                android:id="@+id/btnSignUp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="#D61A0C"
                 android:enabled="false"
-                android:text="signup"
+                android:text="@string/sign_up"
                 android:textColor="#FFFFFF"
                 android:visibility="invisible"
                 app:backgroundTint="#0027FF" />

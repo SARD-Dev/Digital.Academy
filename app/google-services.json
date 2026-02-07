@@ -1,14 +1,14 @@
 {
   "project_info": {
-    "project_number": "533468565979",
-    "firebase_url": "https://student-a43e9-default-rtdb.asia-southeast1.firebasedatabase.app",
-    "project_id": "student-a43e9",
-    "storage_bucket": "student-a43e9.appspot.com"
+    "project_number": "964102730665",
+    "firebase_url": "https://digitalacademy-865a0-default-rtdb.firebaseio.com",
+    "project_id": "digitalacademy-865a0",
+    "storage_bucket": "digitalacademy-865a0.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:533468565979:android:d5ce4be1fca9fee941d7fe",
+        "mobilesdk_app_id": "1:964102730665:android:0ea1ee55f6b4d89a180ab8",
         "android_client_info": {
           "package_name": "com.example.digitalacademy"
         }
@@ -16,26 +16,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCQUxpkfCfyEGO_S4JNZFMDP3omk328GZs"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:533468565979:android:429d12234074d6f441d7fe",
-        "android_client_info": {
-          "package_name": "com.example.student"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCQUxpkfCfyEGO_S4JNZFMDP3omk328GZs"
+          "current_key": "AIzaSyD8NHadfb56YuJTkOT06bsSjuMdP32bezU"
         }
       ],
       "services": {

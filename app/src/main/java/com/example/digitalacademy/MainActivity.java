@@ -3,7 +3,6 @@ package com.example.digitalacademy;
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -17,23 +16,24 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.digitalacademy.Common.ToastExtension;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.example.digitalacademy.Common.Enumerations;
+import com.example.digitalacademy.Common.Helpers.AlertDialogHelper;
+import com.example.digitalacademy.Common.StringUtils;
+import com.example.digitalacademy.Common.Helpers.ToastExtension;
+import com.example.digitalacademy.Interface.FirebaseCallBack;
+import com.example.digitalacademy.Services.FirebaseService;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button btnStudentLogin, btnFacultyLogin, btnAdminLogin;
-    ToastExtension toast;
+    private Button btnStudentLogin, btnFacultyLogin, btnAdminLogin;
+    private ToastExtension toast;
+    private FirebaseService firebaseService;
+    private AlertDialogHelper alertDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,42 +45,42 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
-        /// Implementation starts
-        toast = new ToastExtension(MainActivity.this);
-        this.AssignEvents();
+        this.onCreateEvents();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        this.onResumeEvents();
+    }
 
-        this.DecorateFlashText();
-        boolean isNetworkAvailable = IsNetworkAvailable();
-        if (isNetworkAvailable) {
-            CheckFirebaseConnection();
-            CheckVersionIdentifier();
-        } else {
-            toast.ShowShortMessage("No Internet");
-            String title = "Network Control Manager";
-            String message = "No Internet is Connected. Please check your Internet Connection...";
-            ShowAlertDialog(title, message);
-        }
+    /// Event - On Create
+    private void onCreateEvents() {
+        this.toast = new ToastExtension(this);
+        this.firebaseService = new FirebaseService();
+        this.alertDialog = new AlertDialogHelper(this);
+        this.assignEvents();
+    }
+
+    /// Event - On Resume
+    private void onResumeEvents() {
+        this.decorateFlashText();
+        this.networkCheck();
     }
 
     /// Method to assign events to buttons
-    private void AssignEvents() {
-        btnStudentLogin = findViewById(R.id.btnStudentLogin);
-        btnFacultyLogin = findViewById(R.id.btnFacultyLogin);
-        btnAdminLogin = findViewById(R.id.btnAdminLogin);
+    private void assignEvents() {
+        this.btnStudentLogin = findViewById(R.id.btnStudentLogin);
+        this.btnFacultyLogin = findViewById(R.id.btnFacultyLogin);
+        this.btnAdminLogin = findViewById(R.id.btnAdminLogin);
 
-        btnStudentLogin.setOnClickListener(v -> startActivity(new Intent(this, StudentLogin.class)));
-        btnFacultyLogin.setOnClickListener(v -> startActivity(new Intent(this, FacultyLogin.class)));
-        btnAdminLogin.setOnClickListener(v -> startActivity(new Intent(this, AdminLogin.class)));
+        this.btnStudentLogin.setOnClickListener(v -> openLoginScreen(Enumerations.User.Student));
+        this.btnFacultyLogin.setOnClickListener(v -> openLoginScreen(Enumerations.User.Faculty));
+        this.btnAdminLogin.setOnClickListener(v -> openLoginScreen(Enumerations.User.Admin));
     }
 
     /// Method to decorate organization name in main page
-    private void DecorateFlashText() {
+    private void decorateFlashText() {
         TextView tvOrgName = findViewById(R.id.tvOrgName);
         Typeface tfOrgName = getResources().getFont(R.font.segoescb);
         tvOrgName.setTypeface(tfOrgName);
@@ -94,9 +94,22 @@ public class MainActivity extends AppCompatActivity {
         animator.start();
     }
 
+    /// Method to check internet connection
+    private void networkCheck() {
+        boolean isNetworkAvailable = isNetworkAvailable();
+        if (isNetworkAvailable) {
+            this.checkVersionIdentifier();
+        } else {
+            this.toast.showShortMessage("No Internet");
+            String title = "Network Control Manager";
+            String message = "No Internet is Connected. Please check your Internet Connection...";
+            this.showAlertDialog(title, message);
+        }
+    }
+
     /// Method to check Internet is available
-    private boolean IsNetworkAvailable() {
-        ConnectivityManager connectivity = (ConnectivityManager) MainActivity.this.getSystemService(Context.CONNECTIVITY_SERVICE);
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivity = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivity != null) {
             Network[] networks = connectivity.getAllNetworks();
             for (Network network : networks) {
@@ -111,75 +124,44 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
-    /// Method to check firebase connection
-    private void CheckFirebaseConnection() {
-        DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
-
-        connectedRef.addValueEventListener(new ValueEventListener() {
+    /// Method to validate application version while opening
+    private void checkVersionIdentifier() {
+        this.firebaseService.checkVersionIdentifier(new FirebaseCallBack<>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Boolean connected = snapshot.getValue(Boolean.class);
-                if (Boolean.TRUE.equals(connected)) {
-                    toast.ShowShortMessage("Connected to Firebase");
+            public void onSuccess(String object) {
+                if (StringUtils.equals(object, "1")) {
+                    btnStudentLogin.setEnabled(true);
+                    btnFacultyLogin.setEnabled(true);
+                    btnAdminLogin.setEnabled(true);
                 } else {
-                    toast.ShowShortMessage("Disconnected from Firebase");
+                    String title = "Version Control Manager";
+                    String message = "Your app version is exhausted. So your app cannot be accessed hereafter." +
+                            System.lineSeparator() +
+                            "To gain access to the application please update to the latest version immediately.";
+                    showAlertDialog(title, message);
                 }
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                toast.ShowShortMessage("Firebase connection was cancelled");
-            }
-        });
-    }
-
-    private void CheckVersionIdentifier() {
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        DatabaseReference databaseReference = firebaseDatabase.getReference("VersionControlManager");
-
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    var versionObject = dataSnapshot.child("Version").getValue();
-                    if (versionObject != null) {
-                        String VersionIdentifier = versionObject.toString();
-
-                        if (VersionIdentifier.equals("1")) {
-                            btnStudentLogin.setEnabled(true);
-                            btnFacultyLogin.setEnabled(true);
-                            btnAdminLogin.setEnabled(true);
-                        } else {
-                            String title = "Version Control Manager";
-                            String message = "Your app version is exhausted. So your app cannot be accessed hereafter." +
-                                    System.lineSeparator() +
-                                    "To gain access to the application please update to the latest version immediately.";
-                            ShowAlertDialog(title, message);
-                        }
-                    }
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                toast.ShowShortMessage("Firebase connection was cancelled");
+            public void onError(String object) {
+                toast.showShortMessage(object);
             }
         });
     }
 
     /// Alert Dialog - Utility Method
-    private void ShowAlertDialog(String title, String alertMessage) {
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
-        alertDialogBuilder.setMessage(alertMessage);
-        alertDialogBuilder.setTitle(title);
-        alertDialogBuilder.setPositiveButton("OK",
-                (dialog, which) -> {
-                    dialog.dismiss();
-                    MainActivity.this.finish();
-                    System.exit(0);
-                });
-        AlertDialog alertDialog = alertDialogBuilder.create();
-        alertDialog.setCancelable(false);
-        alertDialog.setCanceledOnTouchOutside(false);
-        alertDialog.show();
+    private void showAlertDialog(String title, String alertMessage) {
+        this.alertDialog.showWarningDialog(title, alertMessage, () -> {
+            this.finish();
+            System.exit(0);
+        });
     }
+
+    /// Method to open login screen
+    private void openLoginScreen(Enumerations.User userFlag) {
+        Intent loginScreenIntent = new Intent(this, LoginScreen.class);
+        loginScreenIntent.putExtra("userFlag", userFlag);
+        startActivity(loginScreenIntent);
+    }
+
 }
