@@ -9,7 +9,7 @@
     tools:context=".InformationSelect">
 
     <TextView
-        android:id="@+id/collegeView"
+        android:id="@+id/tvCollegeName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
@@ -24,7 +24,7 @@
         app:layout_constraintVertical_bias="0.05" />
 
     <TextView
-        android:id="@+id/menuTypeView"
+        android:id="@+id/tvMenuType"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
@@ -62,7 +62,7 @@
         app:layout_constraintVertical_bias="0.35" />
 
     <Spinner
-        android:id="@+id/deptSelect"
+        android:id="@+id/spnDepartment"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -73,6 +73,7 @@
         app:layout_constraintVertical_bias="0.35" />
 
     <TextView
+        android:id="@+id/tvSemester"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/semester"
@@ -85,7 +86,7 @@
         app:layout_constraintVertical_bias="0.45" />
 
     <Spinner
-        android:id="@+id/semSelect"
+        android:id="@+id/spnSemester"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -96,6 +97,7 @@
         app:layout_constraintVertical_bias="0.45" />
 
     <TextView
+        android:id="@+id/tvSubjectCode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/subject"
@@ -108,7 +110,7 @@
         app:layout_constraintHorizontal_bias="0.1" />
 
     <Spinner
-        android:id="@+id/subjectSelect"
+        android:id="@+id/spnSubject"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -130,7 +132,7 @@
         app:layout_constraintVertical_bias="0.65" />
 
     <Button
-        android:id="@+id/proceedbtn"
+        android:id="@+id/btnProceed"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/proceed"

@@ -3,11 +3,9 @@ package com.example.digitalacademy.Common.Helpers;
 import android.app.Activity;
 import android.app.AlertDialog;
 
-import androidx.fragment.app.DialogFragment;
-
 import com.example.digitalacademy.Common.Enumerations;
 
-public class AlertDialogHelper { //extends DialogFragment {
+public class AlertDialogHelper {
 
     private final Activity activity;
     private AlertDialog.Builder builder;

@@ -11,6 +11,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DigitalAcademy">
         <activity
+            android:name=".CircularUpload"
+            android:exported="false" />
+        <activity
+            android:name=".NotesUpload"
+            android:exported="false" />
+        <activity
             android:name=".EditFacultyInfo"
             android:exported="false" />
         <activity

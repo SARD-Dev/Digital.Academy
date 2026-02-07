@@ -13,7 +13,9 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class FirebaseService {
 
@@ -142,6 +144,23 @@ public class FirebaseService {
         }
     }
 
+    /// Method to get subjects and grades
+    public void getSubjectsAndGrade(String departmentCode, String semester, @NonNull FirebaseCallBack<HashMap<String, String>, String> firebaseCallBack) {
+        try {
+            FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+            DatabaseReference databaseReference = firebaseDatabase.getReference("GradeInfo")
+                    .child(departmentCode)
+                    .child(semester);
+
+            databaseReference.get()
+                    .addOnSuccessListener(dataSnapshot -> getSubjectsAndGrade(firebaseCallBack, dataSnapshot))
+                    .addOnFailureListener(e -> onException(firebaseCallBack, e));
+
+        } catch (Exception e) {
+            this.onException(firebaseCallBack, e);
+        }
+    }
+
     /// Method to get circulars - Fetch Data from Firebase
     private void getCirculars(@NonNull FirebaseCallBack<List<CircularInfo>, String> firebaseCallBack, DataSnapshot dataSnapshot) {
         try {
@@ -170,7 +189,7 @@ public class FirebaseService {
             if (dataSnapshot.exists()) {
                 for (DataSnapshot departmentSnapshot : dataSnapshot.getChildren()) {
                     String departmentCode = departmentSnapshot.getKey();
-                    String departmentName = departmentSnapshot.child("deptName").getValue(String.class);
+                    String departmentName = departmentSnapshot.child("departmentName").getValue(String.class);
                     departmentList.add(new DepartmentInfo(departmentCode, departmentName));
                 }
                 // Sort using Comparable implementation
@@ -278,6 +297,32 @@ public class FirebaseService {
                 }
             } else {
                 this.onDataError(firebaseCallBack, "College not found");
+            }
+        } catch (Exception e) {
+            this.onException(firebaseCallBack, e);
+        }
+    }
+
+    /// Method to get subjects and grades - Fetch Data from Firebase
+    private void getSubjectsAndGrade(@NonNull FirebaseCallBack<HashMap<String, String>, String> firebaseCallBack, DataSnapshot dataSnapshot) {
+        try {
+            //List<String> subjectList = new ArrayList<>();
+            if (dataSnapshot.exists()) {
+                HashMap<String, String> subjectCreditPairs = new HashMap<>();
+                for (DataSnapshot subjectSnapshot : dataSnapshot.getChildren()) {
+
+                    String subjectCode = subjectSnapshot.getKey();
+                    //subjectList.add(subjectCode);
+                    if (subjectSnapshot.child("credit").exists()) {
+                        var credit = subjectSnapshot.child("credit").getValue();
+                        subjectCreditPairs.put(subjectCode, Objects.requireNonNull(credit).toString());
+                    } else {
+                        onDataError(firebaseCallBack, "Credit field missing");
+                    }
+                }
+                firebaseCallBack.onSuccess(subjectCreditPairs);
+            } else {
+                this.onDataError(firebaseCallBack, "Department Info not found");
             }
         } catch (Exception e) {
             this.onException(firebaseCallBack, e);

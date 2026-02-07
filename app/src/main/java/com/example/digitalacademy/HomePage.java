@@ -149,6 +149,7 @@ public class HomePage extends AppCompatActivity {
         } else if (userFlag.equals(Enumerations.User.Faculty)) {
             Intent informationSelect = new Intent(HomePage.this, InformationSelect.class);
             informationSelect.putExtra("collegeName", informationSelect);
+            informationSelect.putExtra("menuFlag", Enumerations.MenuType.GradeCalculation);
             startActivity(informationSelect);
         }
     }
@@ -175,6 +176,7 @@ public class HomePage extends AppCompatActivity {
         intent.putExtra("collegeName", collegeName);
         intent.putExtra("collegeCode", collegeCode);
         intent.putExtra("userFlag", userFlag);
+        intent.putExtra("menuFlag", Enumerations.MenuType.Circular);
         startActivity(intent);
     }
 

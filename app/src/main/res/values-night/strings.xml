@@ -61,4 +61,10 @@
     <string name="enter_the_notes_name">Enter the notes name:</string>
     <string name="enter_some_tags_for_the_notes">Enter some tags for the notes:</string>
     <string name="click_here_to_upload_pdf">Click here to upload PDF</string>
+    <string name="notes_section">Notes Section</string>
+    <string name="notes_upload">Notes Upload</string>
+    <string name="invalid_user_flag">Invalid User Flag</string>
+    <string name="grade_calculation">Grade Calculation</string>
+    <string name="attendance_entry">Attendance Entry</string>
+    <string name="invalid_menu_type">Invalid Menu Type</string>
 </resources>
