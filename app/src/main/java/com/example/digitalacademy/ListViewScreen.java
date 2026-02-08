@@ -20,9 +20,12 @@ import com.example.digitalacademy.Common.Helpers.ToastExtension;
 import com.example.digitalacademy.Common.Models.CircularInfo;
 import com.example.digitalacademy.Common.Models.NotesInfo;
 import com.example.digitalacademy.Interface.FirebaseCallBack;
+import com.example.digitalacademy.Services.CircularService;
 import com.example.digitalacademy.Services.FirebaseService;
+import com.example.digitalacademy.Services.NotesService;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.Calendar;
 import java.util.List;
 
 public class ListViewScreen extends AppCompatActivity {
@@ -36,6 +39,12 @@ public class ListViewScreen extends AppCompatActivity {
     private Enumerations.MenuType menuFlag;
     private AlertDialogHelper alertDialogHelper;
     private FloatingActionButton faBtnAddInfo;
+    private String loginKey;
+    private String userName;
+    private String departmentCode;
+    private String semester;
+    private CircularService circularService;
+    private NotesService notesService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +60,8 @@ public class ListViewScreen extends AppCompatActivity {
         firebaseService = new FirebaseService();
         toast = new ToastExtension(this);
         alertDialogHelper = new AlertDialogHelper(this);
+        circularService = new CircularService();
+        notesService = new NotesService();
 
         this.setAddButtonEvent();
         this.getIntentValues();
@@ -79,6 +90,22 @@ public class ListViewScreen extends AppCompatActivity {
             menuFlag = (Enumerations.MenuType) menu;
         }
         subjectCode = intent.getStringExtra("subjectCode");
+        loginKey = intent.getStringExtra("loginKey");
+        userName = intent.getStringExtra("userName");
+        departmentCode = intent.getStringExtra("departmentCode");
+
+        if (menuFlag.equals(Enumerations.MenuType.Attendance)) {
+            this.getStudentSemster(loginKey);
+        }
+    }
+
+    /// Method to get student semester
+    public void getStudentSemster(String registerNumber) {
+        String year = Integer.toString(Calendar.getInstance().get(Calendar.YEAR));
+        int studentJoinedYear = Integer.parseInt(registerNumber.substring(4, 6));
+        int currentYear = Integer.parseInt(year.substring(2, 4));
+        int yearDifference = currentYear - studentJoinedYear;
+        semester = Integer.toString(2 * yearDifference);
     }
 
     /// Method to get list data based on menu
@@ -88,7 +115,7 @@ public class ListViewScreen extends AppCompatActivity {
                 getNotes();
                 break;
             case Attendance:
-                //getCirculars();
+                getAttendance();
                 break;
             case Circular:
                 getCirculars();
@@ -98,7 +125,7 @@ public class ListViewScreen extends AppCompatActivity {
 
     /// Method to get circulars
     private void getCirculars() {
-        firebaseService.getCirculars(collegeCode, new FirebaseCallBack<>() {
+        circularService.getCirculars(collegeCode, new FirebaseCallBack<>() {
             @Override
             public void onSuccess(List<CircularInfo> object) {
                 if (object != null) {
@@ -115,11 +142,28 @@ public class ListViewScreen extends AppCompatActivity {
 
     /// Method to get notes
     private void getNotes() {
-        firebaseService.getNotes(collegeCode, subjectCode, new FirebaseCallBack<>() {
+        notesService.getNotes(collegeCode, subjectCode, new FirebaseCallBack<>() {
             @Override
             public void onSuccess(List<NotesInfo> object) {
                 if (object != null) {
                     setNotesListView(object);
+                }
+            }
+
+            @Override
+            public void onError(String object) {
+                toast.showShortMessage(object);
+            }
+        });
+    }
+
+    /// Method to get attendance
+    private void getAttendance() {
+        firebaseService.getAttendanceList(new FirebaseCallBack<>() {
+            @Override
+            public void onSuccess(List<String> object) {
+                if (object != null) {
+                    setAttendanceListView(object);
                 }
             }
 
@@ -138,6 +182,17 @@ public class ListViewScreen extends AppCompatActivity {
                 NotesInfo::getTitle,
                 NotesInfo::getTags,
                 (item, position) -> getSelectedNotes(notesInfoList, position));
+        rvNotes.setAdapter(recyclerViewAdapter);
+    }
+
+    /// Method to set attendance list view
+    private void setAttendanceListView(List<String> attendanceList) {
+        RecyclerView rvNotes = findViewById(R.id.rvInfoList);
+        rvNotes.setLayoutManager(new LinearLayoutManager(this));
+        RecyclerViewAdapter<String> recyclerViewAdapter = new RecyclerViewAdapter<>(attendanceList,
+                null, //NotesInfo::getRegisterNumber,
+                null, //NotesInfo::getTags,
+                (item, position) -> getSelectedAttendance(attendanceList, position));
         rvNotes.setAdapter(recyclerViewAdapter);
     }
 
@@ -163,6 +218,11 @@ public class ListViewScreen extends AppCompatActivity {
         this.showDownloadViewDialog(notesInfo.getFileUrl());
     }
 
+    /// Method to get selected attendance
+    private void getSelectedAttendance(List<String> attendanceList, int position) {
+        this.openAttendanceScreen(attendanceList.get(position));
+    }
+
     /// Method to open circular view screen
     private void openCircularViewScreen(CircularInfo circularInfo) {
         Intent circularScreen = new Intent(ListViewScreen.this, CircularScreen.class);
@@ -170,6 +230,19 @@ public class ListViewScreen extends AppCompatActivity {
         //intent.putExtra("collegeCode", collegeCode);
         circularScreen.putExtra("circularInfo", circularInfo); // circularInfo is Serializable
         startActivity(circularScreen);
+    }
+
+    /// Method to open attendance screen
+    private void openAttendanceScreen(String attendanceType) {
+        Intent studentAttendanceView = new Intent(ListViewScreen.this, StudentAttendanceView.class);
+        studentAttendanceView.putExtra("attendanceType", attendanceType);
+        studentAttendanceView.putExtra("collegeName", collegeName);
+        studentAttendanceView.putExtra("loginKey", loginKey);
+        studentAttendanceView.putExtra("userName", userName);
+        studentAttendanceView.putExtra("collegeCode", collegeCode);
+        studentAttendanceView.putExtra("departmentCode", departmentCode);
+        studentAttendanceView.putExtra("semester", semester);
+        startActivity(studentAttendanceView);
     }
 
     /// Method to set add button event
@@ -183,9 +256,6 @@ public class ListViewScreen extends AppCompatActivity {
         switch (menuFlag) {
             case Notes:
                 this.openNotesUploadScreen();
-                break;
-            case Attendance:
-                //getCirculars();
                 break;
             case Circular:
                 this.openCircularUploadScreen();
@@ -207,8 +277,8 @@ public class ListViewScreen extends AppCompatActivity {
     /// Method to open circular upload screen
     private void openCircularUploadScreen() {
         Intent circularUploadIntent = new Intent(this, CircularUpload.class);
-        circularUploadIntent.putExtra("CollegeName", collegeName);
-        circularUploadIntent.putExtra("CollegeCode", collegeCode);
+        circularUploadIntent.putExtra("collegeName", collegeName);
+        circularUploadIntent.putExtra("collegeCode", collegeCode);
         startActivity(circularUploadIntent);
     }
 

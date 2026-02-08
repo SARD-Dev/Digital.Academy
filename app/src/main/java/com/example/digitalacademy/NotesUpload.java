@@ -23,21 +23,22 @@ import com.example.digitalacademy.Common.Helpers.ToastExtension;
 import com.example.digitalacademy.Common.Models.NotesInfo;
 import com.example.digitalacademy.Common.StringUtils;
 import com.example.digitalacademy.Interface.FirebaseCallBack;
-import com.example.digitalacademy.Services.FirebaseService;
+import com.example.digitalacademy.Services.DepartmentService;
+import com.example.digitalacademy.Services.NotesService;
 
 public class NotesUpload extends AppCompatActivity {
 
-    private FirebaseService firebaseService;
     private ToastExtension toast;
     private String collegeCode = "";
     private String departmentCode = "";
     private String subjectCode = "";
-
+    private DepartmentService departmentService;
     private NotesInfo notesInfo;
     private TextView tvUploadPdf;
     private ProgressDialogHelper progressDialog;
     private Button btnUploadNotes;
     private ActivityResultLauncher<Intent> pdfPickerLauncher;
+    private NotesService notesService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,10 +51,11 @@ public class NotesUpload extends AppCompatActivity {
             return insets;
         });
 
-        firebaseService = new FirebaseService();
         toast = new ToastExtension(this);
         progressDialog = new ProgressDialogHelper(this);
         notesInfo = new NotesInfo();
+        departmentService = new DepartmentService();
+        notesService = new NotesService();
 
         this.getIntentValues();
         this.getDepartmentName();
@@ -96,8 +98,7 @@ public class NotesUpload extends AppCompatActivity {
     /// Method to get department name
     private void getDepartmentName() {
         TextView tvDepartment = findViewById(R.id.tvDepartment);
-
-        firebaseService.getDepartmentName(departmentCode, new FirebaseCallBack<>() {
+        departmentService.getDepartmentName(departmentCode, new FirebaseCallBack<>() {
             @Override
             public void onSuccess(String object) {
                 tvDepartment.setText(object);
@@ -137,7 +138,7 @@ public class NotesUpload extends AppCompatActivity {
 
         notesInfo.setTimeStamp(String.valueOf(System.currentTimeMillis()));
 
-        firebaseService.setNotesInfo(collegeCode, subjectCode, notesInfo, new FirebaseCallBack<>() {
+        notesService.setNotesInfo(collegeCode, subjectCode, notesInfo, new FirebaseCallBack<>() {
             @Override
             public void onSuccess(String object) {
                 toast.showShortMessage(object);

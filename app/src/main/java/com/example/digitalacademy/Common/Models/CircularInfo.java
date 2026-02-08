@@ -5,10 +5,10 @@ import androidx.annotation.NonNull;
 import java.io.Serializable;
 
 public class CircularInfo implements Comparable<CircularInfo>, Serializable {
-    private final String title;
-    private final String description;
-    private final String time;
-    private final String fileUrl;
+    private String title;
+    private String description;
+    private String time;
+    private String fileUrl;
 
     /// Firebase needs a no-arg constructor
     public CircularInfo() {
@@ -29,16 +29,32 @@ public class CircularInfo implements Comparable<CircularInfo>, Serializable {
         return title;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     public String getDescription() {
         return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getTime() {
         return time;
     }
 
+    public void setTime(String time) {
+        this.time = time;
+    }
+
     public String getFileUrl() {
         return fileUrl;
+    }
+
+    public void setFileUrl(String fireUrl) {
+        this.fileUrl = fireUrl;
     }
 
     @Override

@@ -76,4 +76,13 @@
     <string name="grade_calculation">Grade Calculation</string>
     <string name="attendance_entry">Attendance Entry</string>
     <string name="invalid_menu_type">Invalid Menu Type</string>
+    <string name="registerNumber">Title :</string>
+    <string name="conducted">Description :</string>
+    <string name="upload_pdf">Upload PDF</string>
+    <string name="the_subject_selected_has_not_uploaded_yet">The subject selected has not uploaded yet.</string>
+    <string name="total_hours_conducted">Total Hours Conducted :</string>
+    <string name="hours_present">Hours Present :</string>
+    <string name="percentage">Percentage :</string>
+    <string name="if_any_error_in_the_above_data">If any error in the above data,</string>
+    <string name="contact_admin">contact admin</string>
 </resources>

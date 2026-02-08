@@ -19,9 +19,10 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.digitalacademy.Common.ContainerClasses.TextViewSpinner;
+import com.example.digitalacademy.Common.Enumerations;
 import com.example.digitalacademy.Common.Helpers.ToastExtension;
 import com.example.digitalacademy.Interface.FirebaseCallBack;
-import com.example.digitalacademy.Services.FirebaseService;
+import com.example.digitalacademy.Services.GradeService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,7 +37,9 @@ public class GradeCalculation extends AppCompatActivity {
     private ToastExtension toast;
     private HashMap<String, String> subjectCreditPairs = new HashMap<>();
     private final List<TextViewSpinner> subjectGradeList = new ArrayList<>();
-    private FirebaseService firebaseService;
+    private GradeService gradeService;
+    private String collegeCode;
+    private Enumerations.User userFlag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +53,7 @@ public class GradeCalculation extends AppCompatActivity {
         });
 
         toast = new ToastExtension(GradeCalculation.this);
-        firebaseService = new FirebaseService();
+        gradeService = new GradeService();
 
         this.getIntentData();
         this.loadSemesterSpinner();
@@ -63,6 +66,11 @@ public class GradeCalculation extends AppCompatActivity {
         String departmentName = intent.getStringExtra("departmentName");
         departmentCode = intent.getStringExtra("departmentCode");
         collegeName = intent.getStringExtra("collegeName");
+        collegeCode = intent.getStringExtra("collegeCode");
+        var user = intent.getSerializableExtra("userFlag");
+        if (user instanceof Enumerations.User) {
+            userFlag = (Enumerations.User) user;
+        }
 
         TextView tvDepartment = findViewById(R.id.tvDepartment);
         tvDepartment.setText(departmentName);
@@ -100,7 +108,7 @@ public class GradeCalculation extends AppCompatActivity {
 
     /// Method to get subjects and credits
     private void getSubjectsAndCredits(String semester) {
-        firebaseService.getSubjectsAndGrade(departmentCode, semester, new FirebaseCallBack<>() {
+        gradeService.getSubjectsAndGrade(departmentCode, semester, new FirebaseCallBack<>() {
             @Override
             public void onSuccess(HashMap<String, String> object) {
                 subjectCreditPairs = object;
@@ -118,6 +126,8 @@ public class GradeCalculation extends AppCompatActivity {
     private void initializeSubjectGradeView() {
         LinearLayout linearLayout = findViewById(R.id.subjectGradeView);
         String[] grades = {"O", "A+", "A", "B+", "B", "U"};
+        subjectGradeList.clear();
+        linearLayout.removeAllViews();
 
         for (Map.Entry<String, String> subjectCreditPair : subjectCreditPairs.entrySet()) {
             View itemView = LayoutInflater.from(this).inflate(R.layout.text_view_spinner, linearLayout, false);
@@ -205,6 +215,9 @@ public class GradeCalculation extends AppCompatActivity {
     private void openOtherDepartmentSelection() {
         Intent informationSelect = new Intent(GradeCalculation.this, InformationSelect.class);
         informationSelect.putExtra("collegeName", collegeName);
+        informationSelect.putExtra("collegeCode", collegeCode);
+        informationSelect.putExtra("menuFlag", Enumerations.MenuType.GradeCalculation);
+        informationSelect.putExtra("userFlag", userFlag);
         startActivity(informationSelect);
     }
 

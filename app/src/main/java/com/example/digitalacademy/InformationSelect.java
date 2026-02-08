@@ -21,7 +21,8 @@ import com.example.digitalacademy.Common.Helpers.ToastExtension;
 import com.example.digitalacademy.Common.Models.DepartmentInfo;
 import com.example.digitalacademy.Common.StringUtils;
 import com.example.digitalacademy.Interface.FirebaseCallBack;
-import com.example.digitalacademy.Services.FirebaseService;
+import com.example.digitalacademy.Services.DepartmentService;
+import com.example.digitalacademy.Services.GradeService;
 
 import java.util.List;
 
@@ -30,9 +31,10 @@ public class InformationSelect extends AppCompatActivity {
     private ToastExtension toast;
     private String departmentCode, collegeName, semester, collegeCode, subjectCode;
     private Enumerations.MenuType menuFlag;
-    private FirebaseService firebaseService;
     private Enumerations.User userFlag;
     private String departmentName;
+    private DepartmentService departmentService;
+    private GradeService gradeService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +47,8 @@ public class InformationSelect extends AppCompatActivity {
             return insets;
         });
         this.toast = new ToastExtension(InformationSelect.this);
-        this.firebaseService = new FirebaseService();
+        this.departmentService = new DepartmentService();
+        this.gradeService = new GradeService();
 
         this.getIntentValues();
         this.setCollegeName();
@@ -67,9 +70,6 @@ public class InformationSelect extends AppCompatActivity {
         if (user instanceof Enumerations.User) {
             userFlag = (Enumerations.User) user;
         }
-        departmentCode = intent.getStringExtra("departmentCode");
-        semester = intent.getStringExtra("semester");
-        subjectCode = intent.getStringExtra("subjectCode");
     }
 
     /// Method to set college name
@@ -112,7 +112,7 @@ public class InformationSelect extends AppCompatActivity {
 
     /// Method to load departments
     private void loadDepartments() {
-        firebaseService.getDepartments(new FirebaseCallBack<>() {
+        departmentService.getDepartments(new FirebaseCallBack<>() {
             @Override
             public void onSuccess(List<DepartmentInfo> object) {
                 loadDepartmentSpinner(object);
@@ -187,7 +187,7 @@ public class InformationSelect extends AppCompatActivity {
             return;
         }
 
-        firebaseService.getSubjects(departmentCode, semester, new FirebaseCallBack<>() {
+        gradeService.getSubjects(departmentCode, semester, new FirebaseCallBack<>() {
             @Override
             public void onSuccess(List<String> object) {
                 loadSubjectSpinner(object);

@@ -57,11 +57,18 @@ public class RecyclerViewAdapter<T> extends RecyclerView.Adapter<RecyclerViewAda
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewAdapter.ViewHolder<T> holder, int position) {
         T item = recycleViewItems.get(position);
-        holder.bind(item,
+        holder.bind(
+                item,
                 listener,
                 position,
-                titleMapper.apply(item),
-                contentMapper.apply(item));
+                titleMapper != null
+                        ? titleMapper.apply(item)
+                        : item instanceof String
+                        ? (String) item : "",
+                contentMapper != null
+                        ? contentMapper.apply(item)
+                        : ""
+        );
     }
 
     /**
