@@ -1,7 +1,6 @@
 [versions]
 agp = "9.0.0"
 firebaseBom = "34.9.0"
-firebaseBomVersion = "34.9.0"
 junit = "4.13.2"
 junitVersion = "1.3.0"
 espressoCore = "3.7.0"
