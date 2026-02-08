@@ -18,13 +18,6 @@ public class CircularInfo implements Comparable<CircularInfo>, Serializable {
         this.fileUrl = null;
     }
 
-    public CircularInfo(String title, String description, String time, String fileUrl) {
-        this.title = title;
-        this.description = description;
-        this.time = time;
-        this.fileUrl = fileUrl;
-    }
-
     public String getTitle() {
         return title;
     }

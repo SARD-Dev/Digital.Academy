@@ -10,7 +10,6 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -28,6 +27,8 @@ import com.example.digitalacademy.Common.Models.CircularInfo;
 import com.example.digitalacademy.Interface.FirebaseCallBack;
 import com.example.digitalacademy.Services.CircularService;
 
+import com.google.android.material.materialswitch.MaterialSwitch;
+
 public class CircularUpload extends AppCompatActivity {
 
     private String collegeName;
@@ -40,7 +41,7 @@ public class CircularUpload extends AppCompatActivity {
     private TextView tvClickHere;
     private ActivityResultLauncher<Intent> pdfPickerLauncher;
     private ProgressDialogHelper progressDialog;
-    private Switch pdfSwitch;
+    private MaterialSwitch pdfSwitch;
     private CircularService circularService;
 
     @Override

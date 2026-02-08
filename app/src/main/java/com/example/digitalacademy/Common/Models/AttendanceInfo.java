@@ -6,10 +6,10 @@ import java.io.Serializable;
 
 public class AttendanceInfo implements Comparable<com.example.digitalacademy.Common.Models.AttendanceInfo>, Serializable {
 
-    private String registerNumber;
-    private String conducted;
-    private String present;
-    private String percentage;
+    private final String registerNumber;
+    private final String conducted;
+    private final String present;
+    private final String percentage;
 
     /// Firebase needs a no-arg constructor
     public AttendanceInfo() {
@@ -19,43 +19,20 @@ public class AttendanceInfo implements Comparable<com.example.digitalacademy.Com
         this.percentage = null;
     }
 
-    public AttendanceInfo(String registerNumber, String conducted, String present, String percentage) {
-        this.registerNumber = registerNumber;
-        this.conducted = conducted;
-        this.present = present;
-        this.percentage = percentage;
-    }
-
     public String getRegisterNumber() {
         return registerNumber;
-    }
-
-    public void setRegisterNumber(String registerNumber) {
-        this.registerNumber = registerNumber;
     }
 
     public String getConducted() {
         return conducted;
     }
 
-    public void setConducted(String conducted) {
-        this.conducted = conducted;
-    }
-
     public String getPresent() {
         return present;
     }
 
-    public void setPresent(String present) {
-        this.present = present;
-    }
-
     public String getPercentage() {
         return percentage;
-    }
-
-    public void setPercentage(String fireUrl) {
-        this.percentage = fireUrl;
     }
 
     @Override
