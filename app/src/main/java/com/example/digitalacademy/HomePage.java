@@ -14,6 +14,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.digitalacademy.Common.Enumerations;
 import com.example.digitalacademy.Common.Helpers.ToastExtension;
 import com.example.digitalacademy.Interface.FirebaseCallBack;
+import com.example.digitalacademy.Services.DepartmentService;
 import com.example.digitalacademy.Services.FirebaseService;
 
 public class HomePage extends AppCompatActivity {
@@ -24,6 +25,7 @@ public class HomePage extends AppCompatActivity {
     private ToastExtension toast;
     private String userName = "";
     private FirebaseService firebaseService;
+    private DepartmentService departmentService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +40,8 @@ public class HomePage extends AppCompatActivity {
 
         toast = new ToastExtension(HomePage.this);
         firebaseService = new FirebaseService();
+        departmentService = new DepartmentService();
+
         this.assignEvents();
         this.displayNameAndCollege();
     }
@@ -131,13 +135,15 @@ public class HomePage extends AppCompatActivity {
         if (userFlag.equals(Enumerations.User.Student)) {
             String departmentCode = loginKey.substring(6, 9);
 
-            firebaseService.getDepartmentName(departmentCode, new FirebaseCallBack<>() {
+            departmentService.getDepartmentName(departmentCode, new FirebaseCallBack<>() {
                 @Override
                 public void onSuccess(String object) {
                     Intent gradeCalculation = new Intent(HomePage.this, GradeCalculation.class);
                     gradeCalculation.putExtra("departmentName", object);
                     gradeCalculation.putExtra("departmentCode", departmentCode);
                     gradeCalculation.putExtra("collegeName", collegeName);
+                    gradeCalculation.putExtra("collegeCode", collegeCode);
+                    gradeCalculation.putExtra("userFlag", userFlag);
                     startActivity(gradeCalculation);
                 }
 
@@ -157,16 +163,20 @@ public class HomePage extends AppCompatActivity {
     /// Method to open attendance screen
     private void openAttendanceScreen() {
         if (userFlag.equals(Enumerations.User.Student)) {
-            Intent circularScreen = new Intent(this, CircularScreen.class);
-            circularScreen.putExtra("userName", userName);
-            circularScreen.putExtra("loginKey", loginKey);
-            startActivity(circularScreen);
+            Intent listViewScreen = new Intent(this, ListViewScreen.class);
+            listViewScreen.putExtra("userName", userName);
+            listViewScreen.putExtra("loginKey", loginKey);
+            listViewScreen.putExtra("collegeName", collegeName);
+            listViewScreen.putExtra("collegeCode", collegeCode);
+            listViewScreen.putExtra("userFlag", userFlag);
+            listViewScreen.putExtra("menuFlag", Enumerations.MenuType.Attendance);
+            startActivity(listViewScreen);
         } else if (userFlag.equals(Enumerations.User.Faculty)) {
-            Intent intent = new Intent(HomePage.this, InformationSelect.class);
-            intent.putExtra("collegeName", collegeName);
-            intent.putExtra("collegeCode", collegeCode);
-            intent.putExtra("menuFlag", Enumerations.MenuType.Attendance);
-            startActivity(intent);
+            Intent informationSelect = new Intent(HomePage.this, InformationSelect.class);
+            informationSelect.putExtra("collegeName", collegeName);
+            informationSelect.putExtra("collegeCode", collegeCode);
+            informationSelect.putExtra("menuFlag", Enumerations.MenuType.Attendance);
+            startActivity(informationSelect);
         }
     }
 

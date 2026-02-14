@@ -11,12 +11,16 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class StudentService extends FirebaseService {
 
+    private final DatabaseReference databaseReference;
+
+    public StudentService() {
+        databaseReference = FirebaseDatabase.getInstance().getReference("StudentInfo");
+    }
+
     /// Method to get student info
     public void getInfo(String registerNumber, @NonNull FirebaseCallBack<StudentInfo, String> firebaseCallBack) {
         try {
-            FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-            DatabaseReference databaseReference = firebaseDatabase.getReference("StudentInfo").child(registerNumber);
-
+            DatabaseReference databaseReference = this.databaseReference.child(registerNumber);
             databaseReference.get()
                     .addOnSuccessListener(dataSnapshot -> getInfo(firebaseCallBack, dataSnapshot))
                     .addOnFailureListener(e -> onException(firebaseCallBack, e));
@@ -28,8 +32,7 @@ public class StudentService extends FirebaseService {
     /// Method to get student first name
     public void getFirstName(String registerNumber, @NonNull FirebaseCallBack<String, String> firebaseCallBack) {
         try {
-            FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-            DatabaseReference databaseReference = firebaseDatabase.getReference("StudentInfo").child(registerNumber);
+            DatabaseReference databaseReference = this.databaseReference.child(registerNumber);
             databaseReference.get()
                     .addOnSuccessListener(dataSnapshot -> getFirstName(firebaseCallBack, dataSnapshot))
                     .addOnFailureListener(e -> onException(firebaseCallBack, e));
@@ -44,9 +47,7 @@ public class StudentService extends FirebaseService {
             if (StringUtils.isNullOrBlank(registerNumber)) {
                 throw new IllegalArgumentException("registerNumber cannot be null or empty");
             }
-
-            FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-            DatabaseReference databaseReference = firebaseDatabase.getReference("StudentInfo").child(registerNumber);
+            DatabaseReference databaseReference = this.databaseReference.child(registerNumber);
             databaseReference.get()
                     .addOnSuccessListener(dataSnapshot -> getPassword(firebaseCallBack, dataSnapshot))
                     .addOnFailureListener(e -> onException(firebaseCallBack, e));
@@ -58,8 +59,7 @@ public class StudentService extends FirebaseService {
     /// Method to get student phone number
     public void getPhoneNumber(String registerNumber, @NonNull FirebaseCallBack<String, String> firebaseCallBack) {
         try {
-            FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-            DatabaseReference databaseReference = firebaseDatabase.getReference("StudentInfo").child(registerNumber);
+            DatabaseReference databaseReference = this.databaseReference.child(registerNumber);
             databaseReference.get()
                     .addOnSuccessListener(dataSnapshot -> getPhoneNumber(firebaseCallBack, dataSnapshot))
                     .addOnFailureListener(e -> onException(firebaseCallBack, e));
@@ -71,9 +71,7 @@ public class StudentService extends FirebaseService {
     /// Method to set student password
     public void setPassword(String registerNumber, String password, @NonNull FirebaseCallBack<String, String> firebaseCallBack) {
         try {
-            FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-            DatabaseReference databaseReference = firebaseDatabase.getReference("StudentInfo");
-            databaseReference.child(registerNumber)
+            this.databaseReference.child(registerNumber)
                     .child("password")
                     .setValue(password)
                     .addOnSuccessListener(aVoid -> firebaseCallBack.onSuccess("Password updated"))
