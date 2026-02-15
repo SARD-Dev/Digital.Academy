@@ -2,7 +2,6 @@ package com.example.digitalacademy.Services;
 
 import androidx.annotation.NonNull;
 
-import com.example.digitalacademy.Common.Models.FacultyInfo;
 import com.example.digitalacademy.Common.Models.StudentInfo;
 import com.example.digitalacademy.Common.StringUtils;
 import com.example.digitalacademy.Interface.FirebaseCallBack;
