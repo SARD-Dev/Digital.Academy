@@ -1,5 +1,7 @@
 package com.example.digitalacademy.Common.Models;
 
+import com.example.digitalacademy.Common.StringUtils;
+
 public class UserInfo {
     private String email;
     private String firstName;
@@ -44,4 +46,12 @@ public class UserInfo {
         this.phoneNumber = phoneNumber;
     }
 
+    public Boolean isAnyInfoEmpty() {
+        return StringUtils.isNullOrBlank(email)
+                || StringUtils.isNullOrBlank(firstName)
+                || StringUtils.isNullOrBlank(lastName)
+                || StringUtils.isNullOrBlank(password)
+                || StringUtils.isNullOrBlank(phoneNumber);
+
+    }
 }

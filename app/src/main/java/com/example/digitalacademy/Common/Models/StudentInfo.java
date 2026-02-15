@@ -1,5 +1,7 @@
 package com.example.digitalacademy.Common.Models;
 
+import com.example.digitalacademy.Common.StringUtils;
+
 public class StudentInfo extends UserInfo {
     private String birthDate;
     private String department;
@@ -29,4 +31,10 @@ public class StudentInfo extends UserInfo {
         this.registerNumber = registerNumber;
     }
 
+    public Boolean isAnyInfoEmpty() {
+        return super.isAnyInfoEmpty()
+                || StringUtils.isNullOrBlank(birthDate)
+                || StringUtils.isNullOrBlank(department)
+                || StringUtils.isNullOrBlank(registerNumber);
+    }
 }

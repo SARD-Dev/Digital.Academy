@@ -2,6 +2,7 @@ package com.example.digitalacademy.Services;
 
 import androidx.annotation.NonNull;
 
+import com.example.digitalacademy.Common.Models.FacultyInfo;
 import com.example.digitalacademy.Common.Models.StudentInfo;
 import com.example.digitalacademy.Common.StringUtils;
 import com.example.digitalacademy.Interface.FirebaseCallBack;
@@ -76,6 +77,18 @@ public class StudentService extends FirebaseService {
                     .setValue(password)
                     .addOnSuccessListener(aVoid -> firebaseCallBack.onSuccess("Password updated"))
                     .addOnFailureListener(e -> onDataError(firebaseCallBack, e.getMessage()));
+        } catch (Exception e) {
+            this.onException(firebaseCallBack, e);
+        }
+    }
+
+    /// Method to set student info
+    public void setStudentInfo(String registerNumber, StudentInfo studentInfo, @NonNull FirebaseCallBack<String, String> firebaseCallBack) {
+        try {
+            databaseReference.child(registerNumber)
+                    .setValue(studentInfo)
+                    .addOnSuccessListener(aVoid -> firebaseCallBack.onSuccess("Student Info updated"))
+                    .addOnFailureListener(e -> onException(firebaseCallBack, e));
         } catch (Exception e) {
             this.onException(firebaseCallBack, e);
         }
