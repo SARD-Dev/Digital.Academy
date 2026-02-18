@@ -1,6 +1,7 @@
 package com.example.digitalacademy.Common.Models;
 
 import com.example.digitalacademy.Common.StringUtils;
+import com.google.firebase.database.Exclude;
 
 public class FacultyInfo extends UserInfo {
     private String collegeName;
@@ -31,6 +32,7 @@ public class FacultyInfo extends UserInfo {
         this.facultyCode = facultyCode;
     }
 
+    @Exclude
     public Boolean isAnyInfoEmpty() {
         return super.isAnyInfoEmpty()
                 || StringUtils.isNullOrBlank(collegeName)

@@ -93,6 +93,49 @@ public class StudentService extends FirebaseService {
         }
     }
 
+    /// Method to check if student is registered
+    public void isRegistered(String registerNumber, @NonNull FirebaseCallBack<Boolean, String> firebaseCallBack) {
+        try {
+            DatabaseReference databaseReference = this.databaseReference.child(registerNumber);
+            databaseReference.get()
+                    .addOnSuccessListener(dataSnapshot -> isRegistered(firebaseCallBack, dataSnapshot))
+                    .addOnFailureListener(e -> onException(firebaseCallBack, e));
+        } catch (Exception e) {
+            this.onException(firebaseCallBack, e);
+        }
+    }
+
+    /// Method to check if email is registered
+    public void isEmailRegistered(String email, @NonNull FirebaseCallBack<Boolean, String> firebaseCallBack) {
+        try {
+            DatabaseReference databaseReference = this.databaseReference
+                    .orderByChild("email")
+                    .equalTo(email)
+                    .getRef();
+
+            databaseReference.get()
+                    .addOnSuccessListener(dataSnapshot -> isRegistered(firebaseCallBack, dataSnapshot))
+                    .addOnFailureListener(e -> onException(firebaseCallBack, e));
+        } catch (Exception e) {
+            this.onException(firebaseCallBack, e);
+        }
+    }
+
+    public void isPhoneNumberRegistered(String email, @NonNull FirebaseCallBack<Boolean, String> firebaseCallBack) {
+        try {
+            DatabaseReference databaseReference = this.databaseReference
+                    .orderByChild("phoneNumber")
+                    .equalTo(email)
+                    .getRef();
+
+            databaseReference.get()
+                    .addOnSuccessListener(dataSnapshot -> isRegistered(firebaseCallBack, dataSnapshot))
+                    .addOnFailureListener(e -> onException(firebaseCallBack, e));
+        } catch (Exception e) {
+            this.onException(firebaseCallBack, e);
+        }
+    }
+
     /// Method to get student info - Firebase access
     private void getInfo(@NonNull FirebaseCallBack<StudentInfo, String> firebaseCallBack, DataSnapshot dataSnapshot) {
         try {
@@ -102,6 +145,15 @@ public class StudentService extends FirebaseService {
             } else {
                 onDataError(firebaseCallBack, "Account not found");
             }
+        } catch (Exception e) {
+            this.onException(firebaseCallBack, e);
+        }
+    }
+
+    /// Method to check student registered - Firebase access
+    private void isRegistered(@NonNull FirebaseCallBack<Boolean, String> firebaseCallBack, DataSnapshot dataSnapshot) {
+        try {
+            firebaseCallBack.onSuccess(dataSnapshot.exists());
         } catch (Exception e) {
             this.onException(firebaseCallBack, e);
         }

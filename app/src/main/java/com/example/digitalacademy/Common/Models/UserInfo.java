@@ -1,6 +1,7 @@
 package com.example.digitalacademy.Common.Models;
 
 import com.example.digitalacademy.Common.StringUtils;
+import com.google.firebase.database.Exclude;
 
 public class UserInfo {
     private String email;
@@ -46,6 +47,7 @@ public class UserInfo {
         this.phoneNumber = phoneNumber;
     }
 
+    @Exclude
     public Boolean isAnyInfoEmpty() {
         return StringUtils.isNullOrBlank(email)
                 || StringUtils.isNullOrBlank(firstName)

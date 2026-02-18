@@ -89,6 +89,7 @@ public class EditStudentInfo extends AppCompatActivity {
             @Override
             public void onSuccess(StudentInfo object) {
                 if (object != null) {
+                    studentInfo = object;
                     setControlValues(object);
                 }
             }
@@ -164,21 +165,26 @@ public class EditStudentInfo extends AppCompatActivity {
 
     /// Method to save and open login
     private void saveAndOpenLogin() {
-        studentService.setStudentInfo(registerNumber, studentInfo, new FirebaseCallBack<>() {
-            @Override
-            public void onSuccess(String object) {
-                toast.showShortMessage(object);
+        try {
+            studentService.setStudentInfo(registerNumber, studentInfo, new FirebaseCallBack<>() {
+                @Override
+                public void onSuccess(String object) {
+                    toast.showShortMessage(object);
 
-                Intent loginScreen = new Intent(EditStudentInfo.this, LoginScreen.class);
-                startActivity(loginScreen);
-                finish();
-            }
+                    Intent loginScreen = new Intent(EditStudentInfo.this, LoginScreen.class);
+                    loginScreen.putExtra("userFlag", Enumerations.User.Student);
+                    startActivity(loginScreen);
+                    //finish();
+                }
 
-            @Override
-            public void onError(String object) {
-                toast.showShortMessage(object);
-            }
-        });
+                @Override
+                public void onError(String object) {
+                    toast.showShortMessage(object);
+                }
+            });
+        } catch (Exception e) {
+            toast.showShortMessage(e.getMessage());
+        }
     }
 
 }

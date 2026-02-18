@@ -16,6 +16,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.digitalacademy.Common.Enumerations;
 import com.example.digitalacademy.Common.Helpers.AlertDialogHelper;
+import com.example.digitalacademy.Common.Helpers.PasswordHandler;
 import com.example.digitalacademy.Common.Models.FacultyInfo;
 import com.example.digitalacademy.Common.Models.StudentInfo;
 import com.example.digitalacademy.Common.StringUtils;
@@ -38,6 +39,7 @@ public class ChangePassword extends AppCompatActivity {
     private String userFlag;
     private StudentService studentService;
     private FacultyService facultyService;
+    private PasswordHandler passwordHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +60,7 @@ public class ChangePassword extends AppCompatActivity {
         this.facultyInfo = new FacultyInfo();
         this.toast = new ToastExtension(this);
         this.alertDialog = new AlertDialogHelper(this);
+        this.passwordHandler = new PasswordHandler(this.alertDialog);
 
         this.studentService = new StudentService();
         this.facultyService = new FacultyService();
@@ -101,28 +104,14 @@ public class ChangePassword extends AppCompatActivity {
     /// Event - Password focus change
     private void onFocusChangeEvent(boolean hasFocus) {
         if (hasFocus) {
-            this.alertDialog.showWarningDialog("Password Restrictions",
-                    "1. Must have at least one numeric character" + System.lineSeparator() +
-                            "2. Must have at least one lowercase character" + System.lineSeparator() +
-                            "3. Must have at least one uppercase character" + System.lineSeparator() +
-                            "4. Must have at least one special symbol among @#$%" + System.lineSeparator() +
-                            "5. Password length should be between 8 and 20", null
-            );
+            passwordHandler.showPasswordRules();
         } else {
             String password = etPassword.getText().toString();
-
-            String regex = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{8,20}$";
-            Pattern pattern = Pattern.compile(regex);
-            Matcher matcher = pattern.matcher(password);
-
-            if (matcher.matches()) {
+            boolean isValid = passwordHandler.validatePassword(password);
+            if (isValid) {
                 btnSavePassword.setEnabled(true);
             } else {
-
-                this.alertDialog.showWarningDialog("Password Warning",
-                        "Your password doesn't match our criteria",
-                        () -> etPassword.setSelection(password.length())
-                );
+                etPassword.setSelection(password.length());
             }
         }
     }

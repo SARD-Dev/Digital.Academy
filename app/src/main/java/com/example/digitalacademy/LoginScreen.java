@@ -49,21 +49,30 @@ public class LoginScreen extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        this.toast = new ToastExtension(this);
-        this.studentService = new StudentService();
-        this.facultyService = new FacultyService();
-        this.adminService = new AdminService();
-        this.getIntentValues();
-        this.loadControlInstances();
-        this.assignEvents();
+
+        try {
+            this.toast = new ToastExtension(this);
+            this.studentService = new StudentService();
+            this.facultyService = new FacultyService();
+            this.adminService = new AdminService();
+            this.getIntentValues();
+            this.loadControlInstances();
+            this.assignEvents();
+        } catch (Exception e) {
+            toast.showShortMessage(e.getMessage());
+        }
     }
 
     /// Method to get intent values
     private void getIntentValues(){
         Intent intent = getIntent();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            userFlag = intent.getSerializableExtra("userFlag", Enumerations.User.class);
-        }
+        //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            var user = intent.getSerializableExtra("userFlag");
+            if (user instanceof Enumerations.User) {
+                this.userFlag = (Enumerations.User) user;
+            }
+          //  userFlag = intent.getSerializableExtra("userFlag", Enumerations.User.class);
+        //}
     }
 
     /// Method to load control instances
