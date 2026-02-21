@@ -93,4 +93,10 @@
     <string name="sarath">Sarath</string>
     <string name="sathish">Sathish</string>
     <string name="ashfaq">Ashfaq</string>
+    <string name="edit_your_info">Edit your Info</string>
+    <string name="change_password">Change Password</string>
+    <string name="modify">Modify</string>
+    <string name="staff_code">Staff Code :</string>
+    <string name="college">College :</string>
+    <string name="college_code">College Code :</string>
 </resources>

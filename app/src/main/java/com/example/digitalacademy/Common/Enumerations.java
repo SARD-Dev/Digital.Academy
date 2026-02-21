@@ -18,21 +18,6 @@ public class Enumerations {
         }
     }
 
-    public enum ProcessFlag{
-        Success("1"),
-        Failure("0");
-
-        private final String flag;
-
-        ProcessFlag(String flag) {
-            this.flag = flag;
-        }
-
-        public String getEnumDescription(){
-            return flag;
-        }
-    }
-
     public enum DialogTypes{
         Information,
         Question
@@ -44,6 +29,7 @@ public class Enumerations {
         Attendance,
         Circular,
         Info,
-        AboutUs
+        AboutUs,
+        ForgotPassword
     }
 }

@@ -2,7 +2,6 @@ package com.example.digitalacademy;
 
 import android.content.Intent;
 import android.graphics.Paint;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.view.View;
@@ -49,6 +48,7 @@ public class LoginScreen extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
         this.toast = new ToastExtension(this);
         this.studentService = new StudentService();
         this.facultyService = new FacultyService();
@@ -59,10 +59,11 @@ public class LoginScreen extends AppCompatActivity {
     }
 
     /// Method to get intent values
-    private void getIntentValues(){
+    private void getIntentValues() {
         Intent intent = getIntent();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            userFlag = intent.getSerializableExtra("userFlag", Enumerations.User.class);
+        var user = intent.getSerializableExtra("userFlag");
+        if (user instanceof Enumerations.User) {
+            this.userFlag = (Enumerations.User) user;
         }
     }
 

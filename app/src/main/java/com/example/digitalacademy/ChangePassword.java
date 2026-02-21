@@ -16,6 +16,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.digitalacademy.Common.Enumerations;
 import com.example.digitalacademy.Common.Helpers.AlertDialogHelper;
+import com.example.digitalacademy.Common.Helpers.PasswordHandler;
 import com.example.digitalacademy.Common.Models.FacultyInfo;
 import com.example.digitalacademy.Common.Models.StudentInfo;
 import com.example.digitalacademy.Common.StringUtils;
@@ -24,6 +25,7 @@ import com.example.digitalacademy.Interface.FirebaseCallBack;
 import com.example.digitalacademy.Services.FacultyService;
 import com.example.digitalacademy.Services.StudentService;
 
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,9 +37,10 @@ public class ChangePassword extends AppCompatActivity {
     private EditText etPassword;
     private Button btnSavePassword;
     private EditText etConfirmPassword;
-    private String userFlag;
+    private Enumerations.User userFlag;
     private StudentService studentService;
     private FacultyService facultyService;
+    private PasswordHandler passwordHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +61,7 @@ public class ChangePassword extends AppCompatActivity {
         this.facultyInfo = new FacultyInfo();
         this.toast = new ToastExtension(this);
         this.alertDialog = new AlertDialogHelper(this);
+        this.passwordHandler = new PasswordHandler(this.alertDialog);
 
         this.studentService = new StudentService();
         this.facultyService = new FacultyService();
@@ -76,24 +80,39 @@ public class ChangePassword extends AppCompatActivity {
     private void getIntentValues() {
         Intent intent = getIntent();
 
-        userFlag = intent.getStringExtra("userFlag");
-        int menuFlag = intent.getIntExtra("menuFlag", 2);
+        var user = intent.getSerializableExtra("userFlag");
+        if (user instanceof Enumerations.User) {
+            this.userFlag = (Enumerations.User) user;
+        }
 
-        if (StringUtils.equals(userFlag, Enumerations.User.Student.getEnumDescription())) {
+        Enumerations.MenuType menuFlag = null;
+
+        var menu = intent.getSerializableExtra("menuFlag");
+        if (menu instanceof Enumerations.MenuType) {
+            menuFlag = (Enumerations.MenuType) menu;
+        }
+
+        if (userFlag.equals(Enumerations.User.Student)) {
             String registerNumber = intent.getStringExtra("registerNumber");
             studentInfo.setRegisterNumber(registerNumber);
-            if (menuFlag == 0) {
-                this.getStudentDetailFromFirebase(registerNumber);
-            } else if (menuFlag == 1) {
-                this.getStudentDetailFromIntent(intent);
+            switch (Objects.requireNonNull(menuFlag)) {
+                case ForgotPassword:
+                    this.getStudentDetailFromFirebase(registerNumber);
+                    break;
+                case Info:
+                    this.getStudentDetailFromIntent(intent);
+                    break;
             }
-        } else if (StringUtils.equals(userFlag, Enumerations.User.Faculty.getEnumDescription())) {
+        } else if (userFlag.equals(Enumerations.User.Faculty)) {
             String facultyCode = intent.getStringExtra("facultyCode");
             facultyInfo.setFacultyCode(facultyCode);
-            if (menuFlag == 0) {
-                this.getFacultyDetailFromFirebase(facultyCode);
-            } else if (menuFlag == 1) {
-                this.getFacultyDetailFromIntent(intent);
+            switch (Objects.requireNonNull(menuFlag)){
+                case ForgotPassword:
+                    this.getFacultyDetailFromFirebase(facultyCode);
+                    break;
+                case Info:
+                    this.getFacultyDetailFromIntent(intent);
+                    break;
             }
         }
     }
@@ -101,28 +120,14 @@ public class ChangePassword extends AppCompatActivity {
     /// Event - Password focus change
     private void onFocusChangeEvent(boolean hasFocus) {
         if (hasFocus) {
-            this.alertDialog.showWarningDialog("Password Restrictions",
-                    "1. Must have at least one numeric character" + System.lineSeparator() +
-                            "2. Must have at least one lowercase character" + System.lineSeparator() +
-                            "3. Must have at least one uppercase character" + System.lineSeparator() +
-                            "4. Must have at least one special symbol among @#$%" + System.lineSeparator() +
-                            "5. Password length should be between 8 and 20", null
-            );
+            passwordHandler.showPasswordRules();
         } else {
             String password = etPassword.getText().toString();
-
-            String regex = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{8,20}$";
-            Pattern pattern = Pattern.compile(regex);
-            Matcher matcher = pattern.matcher(password);
-
-            if (matcher.matches()) {
+            boolean isValid = passwordHandler.validatePassword(password);
+            if (isValid) {
                 btnSavePassword.setEnabled(true);
             } else {
-
-                this.alertDialog.showWarningDialog("Password Warning",
-                        "Your password doesn't match our criteria",
-                        () -> etPassword.setSelection(password.length())
-                );
+                etPassword.setSelection(password.length());
             }
         }
     }
@@ -173,13 +178,15 @@ public class ChangePassword extends AppCompatActivity {
 
     /// Method to get student detail from intent
     private void getStudentDetailFromIntent(@NonNull Intent intent) {
-        studentInfo.setFirstName(intent.getStringExtra("firstName"));
-        studentInfo.setLastName(intent.getStringExtra("lastName"));
-        studentInfo.setDepartment(intent.getStringExtra("department"));
-        studentInfo.setBirthDate(intent.getStringExtra("birthDate"));
-        studentInfo.setPhoneNumber(intent.getStringExtra("phoneNumber"));
-        studentInfo.setEmail(intent.getStringExtra("email"));
-        this.setWelcomeMessage(studentInfo.getFirstName());
+        try {
+            var userInfo = intent.getParcelableExtra("studentInfo");
+            if (userInfo instanceof StudentInfo) {
+                studentInfo = (StudentInfo) userInfo;
+            }
+            this.setWelcomeMessage(Objects.requireNonNull(studentInfo).getFirstName());
+        } catch (Exception e) {
+            toast.showShortMessage(e.getMessage());
+        }
     }
 
     /// Method to get faculty detail from firebase
@@ -220,9 +227,9 @@ public class ChangePassword extends AppCompatActivity {
     /// Method to save password
     @Nullable
     private AlertDialogHelper.DialogCallback savePassword(String password) {
-        if (StringUtils.equals(userFlag, Enumerations.User.Student.getEnumDescription())) {
+        if (userFlag.equals(Enumerations.User.Student)) {
             setStudentPassword(password);
-        } else if (StringUtils.equals(userFlag, Enumerations.User.Faculty.getEnumDescription())) {
+        } else if (userFlag.equals(Enumerations.User.Faculty)) {
             setFacultyPassword(password);
         }
         return null;
@@ -231,7 +238,6 @@ public class ChangePassword extends AppCompatActivity {
     /// Method to set student password
     private void setStudentPassword(String password) {
         studentService.setPassword(studentInfo.getRegisterNumber(), password, new FirebaseCallBack<>() {
-
             @Override
             public void onSuccess(String object) {
                 toast.showShortMessage(object);

@@ -95,6 +95,18 @@ public class FacultyService extends FirebaseService {
         }
     }
 
+    /// Method to set faculty info
+    public void setFacultyInfo(String facultyCode, FacultyInfo facultyInfo, @NonNull FirebaseCallBack<String, String> firebaseCallBack) {
+        try {
+            databaseReference.child(facultyCode)
+                    .setValue(facultyInfo)
+                    .addOnSuccessListener(aVoid -> firebaseCallBack.onSuccess("Faculty Info updated"))
+                    .addOnFailureListener(e -> onException(firebaseCallBack, e));
+        } catch (Exception e) {
+            this.onException(firebaseCallBack, e);
+        }
+    }
+
     /// Method to get faculty info - Firebase access
     private void getInfo(@NonNull FirebaseCallBack<FacultyInfo, String> firebaseCallBack, DataSnapshot dataSnapshot) {
         try {

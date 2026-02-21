@@ -163,12 +163,14 @@ public class HomePage extends AppCompatActivity {
     /// Method to open attendance screen
     private void openAttendanceScreen() {
         if (userFlag.equals(Enumerations.User.Student)) {
+            String departmentCode = loginKey.substring(6, 9);
             Intent listViewScreen = new Intent(this, ListViewScreen.class);
             listViewScreen.putExtra("userName", userName);
             listViewScreen.putExtra("loginKey", loginKey);
             listViewScreen.putExtra("collegeName", collegeName);
             listViewScreen.putExtra("collegeCode", collegeCode);
             listViewScreen.putExtra("userFlag", userFlag);
+            listViewScreen.putExtra("departmentCode", departmentCode);
             listViewScreen.putExtra("menuFlag", Enumerations.MenuType.Attendance);
             startActivity(listViewScreen);
         } else if (userFlag.equals(Enumerations.User.Faculty)) {

@@ -29,7 +29,7 @@ import com.google.firebase.auth.AuthResult;
 
 public class ForgotPassword extends AppCompatActivity {
     private ToastExtension toast;
-    private String userFlag = "";
+    private Enumerations.User userFlag;
     private PhoneNumberAuthentication phoneNumberAuthentication;
     private ProgressDialogHelper progressDialog;
     private PhoneAuthCallBack phoneAuthCallBack;
@@ -93,34 +93,38 @@ public class ForgotPassword extends AppCompatActivity {
     /// Method to get user flag from intent
     private void getUserFlagFromIntent() {
         Intent intent = getIntent();
-        userFlag = intent.getStringExtra("userFlag");
+        var user = intent.getSerializableExtra("userFlag");
+        if (user instanceof Enumerations.User) {
+            userFlag = (Enumerations.User) user;
+        }
     }
 
     /// Method to set display key
     private void setDisplayKey() {
         TextView tvDisplayKey = findViewById(R.id.tvDisplayKey);
 
-        if (StringUtils.equals(userFlag, Enumerations.User.Student.getEnumDescription())) {
-            tvDisplayKey.setText(R.string.enter_your_register_number);
-        } else if (StringUtils.equals(userFlag, Enumerations.User.Faculty.getEnumDescription())) {
-            tvDisplayKey.setText(R.string.enter_your_staff_code);
+        switch (userFlag){
+            case Student:
+                tvDisplayKey.setText(R.string.enter_your_register_number);
+                break;
+            case Faculty:
+                tvDisplayKey.setText(R.string.enter_your_staff_code);
+                break;
         }
     }
 
     /// Method to send otp
     private void btnSendOtpClick() {
         String userKey = etKey.getText().toString();
-
         btnSendOtp.setEnabled(false);
 
-        if (StringUtils.hasText(userKey)) {
-            if (StringUtils.equals(userFlag, Enumerations.User.Student.getEnumDescription())) {
+        switch (userFlag){
+            case Student:
                 this.getStudentPhoneNumber(userKey);
-            } else if (StringUtils.equals(userFlag, Enumerations.User.Faculty.getEnumDescription())) {
+                break;
+            case Faculty:
                 this.getFacultyPhoneNumber(userKey);
-            }
-        } else {
-            toast.showShortMessage("Please enter a valid key");
+                break;
         }
     }
 
@@ -199,17 +203,19 @@ public class ForgotPassword extends AppCompatActivity {
     /// Method to open change password screen
     private void openChangePasswordScreen() {
         String userKey = etKey.getText().toString();
-
         Intent intent = new Intent(ForgotPassword.this, ChangePassword.class);
 
-        if (StringUtils.equals(userFlag, Enumerations.User.Student.getEnumDescription())) {
-            intent.putExtra("registerNumber", userKey);
-            intent.putExtra("userFlag", Enumerations.User.Student.getEnumDescription());
-        } else if (StringUtils.equals(userFlag, Enumerations.User.Faculty.getEnumDescription())) {
-            intent.putExtra("facultyCode", userKey);
-            intent.putExtra("userFlag", Enumerations.User.Faculty.getEnumDescription());
+        switch (userFlag) {
+            case Student:
+                intent.putExtra("registerNumber", userKey);
+                break;
+            case Faculty:
+                intent.putExtra("facultyCode", userKey);
+                break;
         }
-        intent.putExtra("menuFlag", 0);
+
+        intent.putExtra("userFlag", userFlag);
+        intent.putExtra("menuFlag", Enumerations.MenuType.ForgotPassword);
         startActivity(intent);
         finish();
     }

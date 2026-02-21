@@ -60,7 +60,7 @@ public class StudentAttendanceView extends AppCompatActivity {
         String collegeName = intent.getStringExtra("collegeName");
         collegeCode = intent.getStringExtra("collegeCode");
         departmentCode = intent.getStringExtra("departmentCode");
-        semester = intent.getStringExtra("Semester");
+        semester = intent.getStringExtra("semester");
         loginKey = intent.getStringExtra("loginKey");
         String userName = intent.getStringExtra("userName");
         attendanceType = intent.getStringExtra("attendanceType");
@@ -85,6 +85,7 @@ public class StudentAttendanceView extends AppCompatActivity {
 
     /// Method to load subjects
     private void loadSubjects() {
+        semester = "6"; // Hardcoded for now
         gradeService.getSubjects(departmentCode, semester, new FirebaseCallBack<>() {
             @Override
             public void onSuccess(List<String> object) {
