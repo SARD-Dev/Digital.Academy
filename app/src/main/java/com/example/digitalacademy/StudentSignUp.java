@@ -32,6 +32,7 @@ public class StudentSignUp extends AppCompatActivity {
     private EditText etEmail;
     private EditText etPhoneNumber;
     private EditText etPassword;
+    private EditText etConfirmPassword;
     private PasswordHandler passwordHandler;
 
 
@@ -60,6 +61,7 @@ public class StudentSignUp extends AppCompatActivity {
         etPhoneNumber = findViewById(R.id.etPhoneNumber);
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
+        etConfirmPassword = findViewById(R.id.etConfirmPassword);
         btnSignUp = findViewById(R.id.btnSignUp);
 
         etRegisterNumber.setOnFocusChangeListener((v, hasFocus) -> etRegisterNumberFocusChange(hasFocus));
@@ -107,7 +109,7 @@ public class StudentSignUp extends AppCompatActivity {
                                         "\n\nTry with a new E-Mail Address.",
                                 () -> etEmail.setSelection(email.length()));
                     } else {
-                        etPassword.setEnabled(true);
+                        etConfirmPassword.setEnabled(true);
                     }
                 }
 
@@ -212,7 +214,7 @@ public class StudentSignUp extends AppCompatActivity {
                 Intent loginScreen = new Intent(StudentSignUp.this, LoginScreen.class);
                 loginScreen.putExtra("userFlag", Enumerations.User.Student);
                 startActivity(loginScreen);
-                //finish();
+                finish();
             }
 
             @Override

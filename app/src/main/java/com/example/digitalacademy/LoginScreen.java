@@ -2,7 +2,6 @@ package com.example.digitalacademy;
 
 import android.content.Intent;
 import android.graphics.Paint;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.view.View;
@@ -50,29 +49,22 @@ public class LoginScreen extends AppCompatActivity {
             return insets;
         });
 
-        try {
-            this.toast = new ToastExtension(this);
-            this.studentService = new StudentService();
-            this.facultyService = new FacultyService();
-            this.adminService = new AdminService();
-            this.getIntentValues();
-            this.loadControlInstances();
-            this.assignEvents();
-        } catch (Exception e) {
-            toast.showShortMessage(e.getMessage());
-        }
+        this.toast = new ToastExtension(this);
+        this.studentService = new StudentService();
+        this.facultyService = new FacultyService();
+        this.adminService = new AdminService();
+        this.getIntentValues();
+        this.loadControlInstances();
+        this.assignEvents();
     }
 
     /// Method to get intent values
-    private void getIntentValues(){
+    private void getIntentValues() {
         Intent intent = getIntent();
-        //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            var user = intent.getSerializableExtra("userFlag");
-            if (user instanceof Enumerations.User) {
-                this.userFlag = (Enumerations.User) user;
-            }
-          //  userFlag = intent.getSerializableExtra("userFlag", Enumerations.User.class);
-        //}
+        var user = intent.getSerializableExtra("userFlag");
+        if (user instanceof Enumerations.User) {
+            this.userFlag = (Enumerations.User) user;
+        }
     }
 
     /// Method to load control instances

@@ -8,6 +8,7 @@ import com.example.digitalacademy.Interface.FirebaseCallBack;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 
 public class StudentService extends FirebaseService {
 
@@ -108,10 +109,9 @@ public class StudentService extends FirebaseService {
     /// Method to check if email is registered
     public void isEmailRegistered(String email, @NonNull FirebaseCallBack<Boolean, String> firebaseCallBack) {
         try {
-            DatabaseReference databaseReference = this.databaseReference
+            Query databaseReference = this.databaseReference
                     .orderByChild("email")
-                    .equalTo(email)
-                    .getRef();
+                    .equalTo(email);
 
             databaseReference.get()
                     .addOnSuccessListener(dataSnapshot -> isRegistered(firebaseCallBack, dataSnapshot))
@@ -121,12 +121,12 @@ public class StudentService extends FirebaseService {
         }
     }
 
-    public void isPhoneNumberRegistered(String email, @NonNull FirebaseCallBack<Boolean, String> firebaseCallBack) {
+    /// Method to check if phone number is registered
+    public void isPhoneNumberRegistered(String phoneNumber, @NonNull FirebaseCallBack<Boolean, String> firebaseCallBack) {
         try {
-            DatabaseReference databaseReference = this.databaseReference
+            Query databaseReference = this.databaseReference
                     .orderByChild("phoneNumber")
-                    .equalTo(email)
-                    .getRef();
+                    .equalTo(phoneNumber);
 
             databaseReference.get()
                     .addOnSuccessListener(dataSnapshot -> isRegistered(firebaseCallBack, dataSnapshot))
