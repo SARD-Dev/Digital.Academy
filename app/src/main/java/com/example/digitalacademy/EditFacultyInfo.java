@@ -3,7 +3,6 @@ package com.example.digitalacademy;
 import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -88,6 +87,7 @@ public class EditFacultyInfo extends AppCompatActivity {
             @Override
             public void onSuccess(FacultyInfo object) {
                 if (object != null) {
+                    facultyInfo = object;
                     setControlValues(object);
                 }
             }
@@ -125,7 +125,7 @@ public class EditFacultyInfo extends AppCompatActivity {
         Intent changePassword = new Intent(EditFacultyInfo.this, ChangePassword.class);
         changePassword.putExtra("userFlag", Enumerations.User.Faculty);
         changePassword.putExtra("menuFlag", Enumerations.MenuType.Info);
-        changePassword.putExtra("facultyInfo", (Parcelable) facultyInfo);
+        changePassword.putExtra("facultyInfo", facultyInfo);
         startActivity(changePassword);
         finish();
     }
@@ -169,6 +169,7 @@ public class EditFacultyInfo extends AppCompatActivity {
                 toast.showShortMessage(object);
 
                 Intent loginScreen = new Intent(EditFacultyInfo.this, LoginScreen.class);
+                loginScreen.putExtra("userFlag", Enumerations.User.Faculty);
                 startActivity(loginScreen);
                 finish();
             }

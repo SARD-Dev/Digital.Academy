@@ -13,12 +13,15 @@ public class FacultyInfo extends UserInfo implements Parcelable {
     private String collegeCode;
     private String facultyCode;
 
-    public FacultyInfo(){
-super();
+    public FacultyInfo() {
+        super();
     }
 
     protected FacultyInfo(Parcel in) {
         super(in);
+        collegeName = in.readString();
+        collegeCode = in.readString();
+        facultyCode = in.readString();
     }
 
     @Override

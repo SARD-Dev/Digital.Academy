@@ -11,6 +11,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DigitalAcademy">
         <activity
+            android:name=".AttendanceModify"
+            android:exported="false" />
+        <activity
+            android:name=".AttendanceEntry"
+            android:exported="false" />
+        <activity
             android:name=".StudentAttendanceView"
             android:exported="false" />
         <activity

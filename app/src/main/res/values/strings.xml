@@ -99,4 +99,12 @@
     <string name="staff_code">Staff Code :</string>
     <string name="college">College :</string>
     <string name="college_code">College Code :</string>
+    <string name="total_working_days">Total Working Days :</string>
+    <string name="hyphen">-</string>
+    <string name="plus">+</string>
+    <string name="number_of_days_present">Number of days present :</string>
+    <string name="done">Done</string>
+    <string name="enter_the_register_number">Enter the Register Number :</string>
+    <string name="search">Search</string>
+    <string name="update">Update</string>
 </resources>

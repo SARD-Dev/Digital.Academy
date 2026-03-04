@@ -2,7 +2,6 @@ package com.example.digitalacademy.Services;
 
 import androidx.annotation.NonNull;
 
-import com.example.digitalacademy.Common.Models.AttendanceInfo;
 import com.example.digitalacademy.Common.StringUtils;
 import com.example.digitalacademy.Interface.FirebaseCallBack;
 import com.google.firebase.database.DataSnapshot;
@@ -54,33 +53,27 @@ public class FirebaseService {
             databaseReference.get()
                     .addOnSuccessListener(dataSnapshot -> getAttendanceList(firebaseCallBack, dataSnapshot))
                     .addOnFailureListener(e -> onException(firebaseCallBack, e));
-
         } catch (Exception e) {
             this.onException(firebaseCallBack, e);
         }
     }
 
-    /// Method to get attendance details
-    public void getAttendanceDetails(String collegeCode,
-                                     String departmentCode,
-                                     String semester,
-                                     String subjectCode,
-                                     String attendanceType,
-                                     @NonNull FirebaseCallBack<List<AttendanceInfo>, String> firebaseCallBack) {
+    /// Method to get register numbers
+    public void getRegisterNumbers(String collegeCode,
+                                   String departmentCode,
+                                   String semester,
+                                   @NonNull FirebaseCallBack<List<String>, String> firebaseCallBack) {
         try {
             FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
             DatabaseReference databaseReference = firebaseDatabase
-                    .getReference("AttendanceInfo")
+                    .getReference("StudentList")
                     .child(collegeCode)
                     .child(departmentCode)
-                    .child(semester)
-                    .child(subjectCode)
-                    .child(attendanceType);
+                    .child(semester);
 
             databaseReference.get()
-                    .addOnSuccessListener(dataSnapshot -> getAttendanceDetails(firebaseCallBack, dataSnapshot))
+                    .addOnSuccessListener(dataSnapshot -> getRegisterNumbers(firebaseCallBack, dataSnapshot))
                     .addOnFailureListener(e -> onException(firebaseCallBack, e));
-
         } catch (Exception e) {
             this.onException(firebaseCallBack, e);
         }
@@ -155,24 +148,27 @@ public class FirebaseService {
             this.onException(firebaseCallBack, e);
         }
     }
-
-    /// Method to get attendance details - Fetch Data from Firebase
-    private void getAttendanceDetails(@NonNull FirebaseCallBack<List<AttendanceInfo>, String> firebaseCallBack, DataSnapshot dataSnapshot) {
+    
+    /// Method to get register numbers - Fetch Data from Firebase
+    private void getRegisterNumbers(@NonNull FirebaseCallBack<List<String>, String> firebaseCallBack, DataSnapshot dataSnapshot) {
         try {
-            List<AttendanceInfo> attendanceList = new ArrayList<>();
+            List<String> registerNumberList = new ArrayList<>();
             if (dataSnapshot.exists()) {
-                for (DataSnapshot attendanceSnapshot : dataSnapshot.getChildren()) {
-                    if (attendanceSnapshot.exists()) {
-                        AttendanceInfo attendanceInfo = attendanceSnapshot.getValue(AttendanceInfo.class);
-                        attendanceList.add(attendanceInfo);
+                for (DataSnapshot studentSnapshot : dataSnapshot.getChildren()) {
+                    DataSnapshot registerNumberChild = studentSnapshot.child("registerNumber");
+                    if (registerNumberChild.exists()) {
+                        String registerNumber = registerNumberChild.getValue(String.class);
+                        registerNumberList.add(registerNumber);
+                    } else {
+                        onDataError(firebaseCallBack, "Register Number field missing");
                     }
                 }
                 // Sort using Comparable implementation
-                Collections.sort(attendanceList);
+                Collections.sort(registerNumberList);
                 // Return an unmodifiable list to prevent accidental mutation
-                firebaseCallBack.onSuccess(Collections.unmodifiableList(attendanceList));
+                firebaseCallBack.onSuccess(Collections.unmodifiableList(registerNumberList));
             } else {
-                this.onDataError(firebaseCallBack, "Attendance not found");
+                this.onDataError(firebaseCallBack, "Student List not found");
             }
         } catch (Exception e) {
             this.onException(firebaseCallBack, e);

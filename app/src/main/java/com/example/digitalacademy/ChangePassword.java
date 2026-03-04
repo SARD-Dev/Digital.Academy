@@ -80,17 +80,8 @@ public class ChangePassword extends AppCompatActivity {
     private void getIntentValues() {
         Intent intent = getIntent();
 
-        var user = intent.getSerializableExtra("userFlag");
-        if (user instanceof Enumerations.User) {
-            this.userFlag = (Enumerations.User) user;
-        }
-
-        Enumerations.MenuType menuFlag = null;
-
-        var menu = intent.getSerializableExtra("menuFlag");
-        if (menu instanceof Enumerations.MenuType) {
-            menuFlag = (Enumerations.MenuType) menu;
-        }
+        userFlag = intent.getSerializableExtra("userFlag", Enumerations.User.class);
+        Enumerations.MenuType menuFlag = intent.getSerializableExtra("menuFlag", Enumerations.MenuType.class);
 
         if (userFlag.equals(Enumerations.User.Student)) {
             String registerNumber = intent.getStringExtra("registerNumber");
@@ -179,10 +170,7 @@ public class ChangePassword extends AppCompatActivity {
     /// Method to get student detail from intent
     private void getStudentDetailFromIntent(@NonNull Intent intent) {
         try {
-            var userInfo = intent.getParcelableExtra("studentInfo");
-            if (userInfo instanceof StudentInfo) {
-                studentInfo = (StudentInfo) userInfo;
-            }
+            studentInfo = intent.getParcelableExtra("studentInfo", StudentInfo.class);
             this.setWelcomeMessage(Objects.requireNonNull(studentInfo).getFirstName());
         } catch (Exception e) {
             toast.showShortMessage(e.getMessage());
@@ -209,13 +197,12 @@ public class ChangePassword extends AppCompatActivity {
 
     /// Method to get faculty detail from intent
     private void getFacultyDetailFromIntent(@NonNull Intent intent) {
-        facultyInfo.setFirstName(intent.getStringExtra("firstName"));
-        facultyInfo.setLastName(intent.getStringExtra("lastName"));
-        facultyInfo.setCollegeName(intent.getStringExtra("collegeName"));
-        facultyInfo.setCollegeCode(intent.getStringExtra("collegeCode"));
-        facultyInfo.setPhoneNumber(intent.getStringExtra("phoneNumber"));
-        facultyInfo.setEmail(intent.getStringExtra("email"));
-        this.setWelcomeMessage(facultyInfo.getFirstName());
+        try {
+            facultyInfo = intent.getParcelableExtra("facultyInfo", FacultyInfo.class);
+            this.setWelcomeMessage(Objects.requireNonNull(facultyInfo).getFirstName());
+        } catch (Exception e) {
+            toast.showShortMessage(e.getMessage());
+        }
     }
 
     /// Method to set welcome message
