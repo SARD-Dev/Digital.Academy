@@ -2,6 +2,7 @@ package com.example.digitalacademy;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -40,9 +41,11 @@ public class InfoPage extends AppCompatActivity {
                 getString(R.string.sathish)
         };
 
-        final Handler handler = new Handler();
+        final Handler handler = new Handler(Looper.getMainLooper());
+
         Runnable r = new Runnable() {
             int i = 0;
+            @Override
             public void run() {
                 ivDevLogo.setImageResource(imgArray[i]);
                 tvDevelopers.setText(nameArray[i]);
@@ -53,6 +56,7 @@ public class InfoPage extends AppCompatActivity {
                 handler.postDelayed(this, 3000);
             }
         };
+
         handler.postDelayed(r, 2000);
     }
 }

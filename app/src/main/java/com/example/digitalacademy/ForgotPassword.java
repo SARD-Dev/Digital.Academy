@@ -93,10 +93,7 @@ public class ForgotPassword extends AppCompatActivity {
     /// Method to get user flag from intent
     private void getUserFlagFromIntent() {
         Intent intent = getIntent();
-        var user = intent.getSerializableExtra("userFlag");
-        if (user instanceof Enumerations.User) {
-            userFlag = (Enumerations.User) user;
-        }
+        userFlag = intent.getSerializableExtra("userFlag", Enumerations.User.class);
     }
 
     /// Method to set display key

@@ -67,10 +67,7 @@ public class GradeCalculation extends AppCompatActivity {
         departmentCode = intent.getStringExtra("departmentCode");
         collegeName = intent.getStringExtra("collegeName");
         collegeCode = intent.getStringExtra("collegeCode");
-        var user = intent.getSerializableExtra("userFlag");
-        if (user instanceof Enumerations.User) {
-            userFlag = (Enumerations.User) user;
-        }
+        userFlag = intent.getSerializableExtra("userFlag", Enumerations.User.class);
 
         TextView tvDepartment = findViewById(R.id.tvDepartment);
         tvDepartment.setText(departmentName);

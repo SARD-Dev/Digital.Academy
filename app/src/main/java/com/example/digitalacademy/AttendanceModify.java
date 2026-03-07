@@ -117,12 +117,13 @@ public class AttendanceModify extends AppCompatActivity {
     }
 
     /// Method to handle button click
-    private Boolean etDaysPresentOnEdit(int actionId) {
+    private boolean etDaysPresentOnEdit(int actionId) {
         String daysConducted = etTotalDays.getText().toString();
         if (actionId == EditorInfo.IME_ACTION_SEND) {
             String present = etDaysPresent.getText().toString();
             Pair<Integer, String> result = calculatePercentage(present, daysConducted);
             etPercentage.setText(result.second);
+            return true;
         }
         return false;
     }

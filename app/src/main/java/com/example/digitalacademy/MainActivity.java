@@ -109,16 +109,16 @@ public class MainActivity extends AppCompatActivity {
 
     /// Method to check Internet is available
     private boolean isNetworkAvailable() {
-        ConnectivityManager connectivity = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connectivity =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivity != null) {
-            Network[] networks = connectivity.getAllNetworks();
-            for (Network network : networks) {
-                NetworkCapabilities capabilities = connectivity.getNetworkCapabilities(network);
-                if (capabilities != null &&
+            Network activeNetwork = connectivity.getActiveNetwork();
+            if (activeNetwork != null) {
+                NetworkCapabilities capabilities =
+                        connectivity.getNetworkCapabilities(activeNetwork);
+                return capabilities != null &&
                         capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
-                        capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)) {
-                    return true;
-                }
+                        capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED);
             }
         }
         return false;
