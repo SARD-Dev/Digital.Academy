@@ -13,6 +13,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.digitalacademy.Common.ContainerClasses.TextViewSpinnerButton;
 import com.example.digitalacademy.Common.Enumerations;
 import com.example.digitalacademy.Common.Helpers.AlertDialogHelper;
 import com.example.digitalacademy.Common.Helpers.RecyclerViewAdapter;
@@ -20,11 +21,13 @@ import com.example.digitalacademy.Common.Helpers.ToastExtension;
 import com.example.digitalacademy.Common.Models.CircularInfo;
 import com.example.digitalacademy.Common.Models.NotesInfo;
 import com.example.digitalacademy.Interface.FirebaseCallBack;
+import com.example.digitalacademy.Services.AttendanceService;
 import com.example.digitalacademy.Services.CircularService;
 import com.example.digitalacademy.Services.FirebaseService;
 import com.example.digitalacademy.Services.NotesService;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
@@ -46,6 +49,7 @@ public class ListViewScreen extends AppCompatActivity {
     private String semester;
     private CircularService circularService;
     private NotesService notesService;
+    private AttendanceService attendanceService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +67,7 @@ public class ListViewScreen extends AppCompatActivity {
         alertDialogHelper = new AlertDialogHelper(this);
         circularService = new CircularService();
         notesService = new NotesService();
+        attendanceService = new AttendanceService();
 
         this.setAddButtonEvent();
         this.getIntentValues();
@@ -188,8 +193,8 @@ public class ListViewScreen extends AppCompatActivity {
         RecyclerView rvNotes = findViewById(R.id.rvInfoList);
         rvNotes.setLayoutManager(new LinearLayoutManager(this));
         RecyclerViewAdapter<String> recyclerViewAdapter = new RecyclerViewAdapter<>(attendanceList,
-                null, //NotesInfo::getRegisterNumber,
-                null, //NotesInfo::getTags,
+                null,
+                null,
                 (item, position) -> getSelectedAttendance(attendanceList, position));
         rvNotes.setAdapter(recyclerViewAdapter);
     }
@@ -232,8 +237,7 @@ public class ListViewScreen extends AppCompatActivity {
     private void openCircularViewScreen(CircularInfo circularInfo) {
         Intent circularScreen = new Intent(ListViewScreen.this, CircularScreen.class);
         circularScreen.putExtra("collegeName", collegeName);
-        //intent.putExtra("collegeCode", collegeCode);
-        circularScreen.putExtra("circularInfo", circularInfo); // circularInfo is Serializable
+        circularScreen.putExtra("circularInfo", circularInfo);
         startActivity(circularScreen);
     }
 
@@ -278,7 +282,7 @@ public class ListViewScreen extends AppCompatActivity {
                 this.openCircularUploadScreen();
                 break;
             case Attendance:
-                this.openAttendanceUploadScreen();
+                this.openAttendanceUploadScreenBasedOnAttendanceType();
                 break;
         }
     }
@@ -302,13 +306,19 @@ public class ListViewScreen extends AppCompatActivity {
         startActivity(circularUploadIntent);
     }
 
-    private void openAttendanceUploadScreen() {
-        Intent attendanceUploadIntent = new Intent(this, AttendanceEntry.class);
-        attendanceUploadIntent.putExtra("collegeName", collegeName);
-        attendanceUploadIntent.putExtra("collegeCode", collegeCode);
-        attendanceUploadIntent.putExtra("departmentCode", departmentCode);
-        attendanceUploadIntent.putExtra("semester", semester);
-        attendanceUploadIntent.putExtra("subjectCode", subjectCode);
+    /// Method to open attendance upload screen based on attendance type
+    private void openAttendanceUploadScreenBasedOnAttendanceType() {
+        List<String> attendanceTypeArray = Arrays.asList(
+                "Internal 1",
+                "Internal 2",
+                "Internal 3",
+                "Internal 4",
+                "Overall");
+        TextViewSpinnerButton.show(this,
+                "Select an Attendance",
+                attendanceTypeArray,
+                0,
+                this::getSelectedAttendanceMenuType);
     }
 
     /// Method to show download view dialog
@@ -333,6 +343,59 @@ public class ListViewScreen extends AppCompatActivity {
                     // Do nothing, just dismiss
                 }
         });
+    }
+
+    /// Method to get selected attendance menu type
+    private void getSelectedAttendanceMenuType(String attendanceType) {
+        attendanceService.getAttendanceTypeList(collegeCode,
+                departmentCode,
+                semester,
+                subjectCode,
+                new FirebaseCallBack<>() {
+                    @Override
+                    public void onSuccess(List<String> object) {
+                        if (object != null && object.contains(attendanceType)) {
+                            toast.showShortMessage(attendanceType + " is already entered.");
+                        } else {
+                            saveAttendanceType(attendanceType);
+                        }
+                    }
+
+                    @Override
+                    public void onError(String object) {
+                        toast.showShortMessage(object);
+                    }
+                });
+    }
+
+    /// Method to save attendance type
+    private void saveAttendanceType(String attendanceType){
+        attendanceService.setAttendanceType(collegeCode,
+                departmentCode,
+                semester,
+                subjectCode,
+                attendanceType, new FirebaseCallBack<>() {
+            @Override
+            public void onSuccess(String object) {
+                openAttendanceUploadScreen(attendanceType);
+            }
+            @Override
+            public void onError(String object) {
+                toast.showShortMessage(object);
+            }
+        });
+    }
+
+    /// Method to open attendance upload screen
+    private void openAttendanceUploadScreen(String attendanceType){
+        Intent attendanceUploadIntent = new Intent(this, AttendanceEntry.class);
+        attendanceUploadIntent.putExtra("collegeName", collegeName);
+        attendanceUploadIntent.putExtra("collegeCode", collegeCode);
+        attendanceUploadIntent.putExtra("departmentCode", departmentCode);
+        attendanceUploadIntent.putExtra("semester", semester);
+        attendanceUploadIntent.putExtra("subjectCode", subjectCode);
+        attendanceUploadIntent.putExtra("attendanceType", attendanceType);
+        startActivity(attendanceUploadIntent);
     }
 
 }

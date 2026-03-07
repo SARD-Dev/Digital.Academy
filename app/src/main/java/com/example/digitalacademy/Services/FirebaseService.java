@@ -11,6 +11,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class FirebaseService {
 
@@ -157,7 +158,7 @@ public class FirebaseService {
                 for (DataSnapshot studentSnapshot : dataSnapshot.getChildren()) {
                     DataSnapshot registerNumberChild = studentSnapshot.child("registerNumber");
                     if (registerNumberChild.exists()) {
-                        String registerNumber = registerNumberChild.getValue(String.class);
+                        String registerNumber = Objects.requireNonNull(registerNumberChild.getValue()).toString(); //(String.class);
                         registerNumberList.add(registerNumber);
                     } else {
                         onDataError(firebaseCallBack, "Register Number field missing");

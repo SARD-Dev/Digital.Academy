@@ -89,12 +89,12 @@
 
     <Button
         android:id="@+id/btnPreviousRegisterNumber"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:text="@string/hyphen"
         android:textAlignment="center"
-        android:textSize="30sp"
+        android:textSize="20sp"
         android:textStyle="bold"
         app:backgroundTint="#F8E432"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -119,12 +119,12 @@
 
     <Button
         android:id="@+id/btnNextRegisterNumber"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:text="@string/plus"
         android:textAlignment="center"
-        android:textSize="30sp"
+        android:textSize="20sp"
         android:textStyle="bold"
         app:backgroundTint="#F8E432"
         app:layout_constraintBottom_toBottomOf="parent"

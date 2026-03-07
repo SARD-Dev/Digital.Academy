@@ -20,10 +20,11 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.digitalacademy.Common.Helpers.FileHandler;
 import com.example.digitalacademy.Common.Helpers.ProgressDialogHelper;
 import com.example.digitalacademy.Common.Helpers.ToastExtension;
 import com.example.digitalacademy.Common.Models.CircularInfo;
+import com.example.digitalacademy.Common.StorageHandler.StorageFactory;
+import com.example.digitalacademy.Common.StorageHandler.StorageHandler;
 import com.example.digitalacademy.Interface.FirebaseCallBack;
 import com.example.digitalacademy.Services.CircularService;
 
@@ -172,8 +173,10 @@ public class CircularUpload extends AppCompatActivity {
     private void fetchAttachment(Uri pdfUri) {
         progressDialog.show("Uploading");
 
-        FileHandler handler = new FileHandler();
-        handler.uploadPdf(pdfUri, collegeCode, circularInfo.getTitle(), new FileHandler.UploadCallback() {
+
+        StorageHandler handler = StorageFactory.getHandler(StorageFactory.Provider.SUPABASE);
+
+        handler.uploadPdf(this, pdfUri, collegeCode, circularInfo.getTitle(), new StorageHandler.UploadCallback() {
             @Override
             public void onSuccess(Uri downloadUrl) {
                 progressDialog.dismiss();

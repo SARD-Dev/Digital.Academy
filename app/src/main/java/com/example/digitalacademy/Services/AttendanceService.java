@@ -143,6 +143,46 @@ public class AttendanceService extends FirebaseService {
         }
     }
 
+    /// Method to get attendance type list
+    public void getAttendanceTypeList(String collegeCode,
+                                      String departmentCode,
+                                      String semester,
+                                      String subjectCode,
+                                      @NonNull FirebaseCallBack<List<String>, String> firebaseCallBack) {
+        try {
+            DatabaseReference databaseReference = this.databaseReference.child(collegeCode)
+                    .child(departmentCode)
+                    .child(semester)
+                    .child(subjectCode);
+
+            databaseReference.get()
+                    .addOnSuccessListener(dataSnapshot -> getAttendanceTypeList(firebaseCallBack, dataSnapshot))
+                    .addOnFailureListener(e -> onException(firebaseCallBack, e));
+        } catch (Exception e) {
+            this.onException(firebaseCallBack, e);
+        }
+    }
+
+    /// Method to set attendance type
+    public void setAttendanceType(String collegeCode,
+                                     String departmentCode,
+                                     String semester,
+                                     String subjectCode,
+                                     String attendanceType,
+                                     @NonNull FirebaseCallBack<String, String> firebaseCallBack) {
+        try {
+            this.databaseReference.child(collegeCode)
+                    .child(departmentCode)
+                    .child(semester)
+                    .child(subjectCode)
+                    .setValue(attendanceType)
+                    .addOnSuccessListener(dataSnapshot -> firebaseCallBack.onSuccess("Attendance Type saved successfully"))
+                    .addOnFailureListener(e -> onException(firebaseCallBack, e));
+        } catch (Exception e) {
+            this.onException(firebaseCallBack, e);
+        }
+    }
+
     /// Method to get attendance details - Fetch Data from Firebase
     private void getAttendanceDetails(@NonNull FirebaseCallBack<List<AttendanceInfo>, String> firebaseCallBack, DataSnapshot dataSnapshot) {
         try {
@@ -180,4 +220,28 @@ public class AttendanceService extends FirebaseService {
             this.onException(firebaseCallBack, e);
         }
     }
+
+    /// Method to get attendance type list - Fetch Data from Firebase
+    private void getAttendanceTypeList(@NonNull FirebaseCallBack<List<String>, String> firebaseCallBack, DataSnapshot dataSnapshot) {
+        try {
+            List<String> attendanceTypeList = new ArrayList<>();
+            if (dataSnapshot.exists()) {
+                for (DataSnapshot attendanceSnapshot : dataSnapshot.getChildren()) {
+                    if (attendanceSnapshot.exists()) {
+                        String attendanceType = attendanceSnapshot.getKey();
+                        attendanceTypeList.add(attendanceType);
+                    }
+                }
+                // Sort using Comparable implementation
+                Collections.sort(attendanceTypeList);
+                // Return an unmodifiable list to prevent accidental mutation
+                firebaseCallBack.onSuccess(Collections.unmodifiableList(attendanceTypeList));
+            } else {
+                this.onDataError(firebaseCallBack, "Attendance not found");
+            }
+        } catch (Exception e) {
+            this.onException(firebaseCallBack, e);
+        }
+    }
+
 }
