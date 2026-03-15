@@ -17,6 +17,8 @@ import com.example.digitalacademy.Interface.FirebaseCallBack;
 import com.example.digitalacademy.Services.DepartmentService;
 import com.example.digitalacademy.Services.FirebaseService;
 
+import java.util.Objects;
+
 public class HomePage extends AppCompatActivity {
     private String loginKey = "";
     private String collegeName = "";
@@ -69,12 +71,9 @@ public class HomePage extends AppCompatActivity {
     private void displayNameAndCollege() {
         Intent intent = getIntent();
 
-        var user = intent.getSerializableExtra("userFlag");
-        if (user instanceof Enumerations.User) {
-            this.userFlag = (Enumerations.User) user;
-        }
+        this.userFlag = intent.getSerializableExtra("userFlag", Enumerations.User.class);
 
-        switch (userFlag){
+        switch (Objects.requireNonNull(userFlag)){
             case Student:
             case Faculty:
                 this.getIntentDetails(intent);
@@ -113,7 +112,7 @@ public class HomePage extends AppCompatActivity {
         });
     }
 
-    /// Method to set user name
+    /// Method to set username
     private void setUserName(String name) {
         TextView tvStudentName;
         tvStudentName = findViewById(R.id.tvStudentName);
@@ -153,10 +152,15 @@ public class HomePage extends AppCompatActivity {
                 }
             });
         } else if (userFlag.equals(Enumerations.User.Faculty)) {
-            Intent informationSelect = new Intent(HomePage.this, InformationSelect.class);
-            informationSelect.putExtra("collegeName", informationSelect);
-            informationSelect.putExtra("menuFlag", Enumerations.MenuType.GradeCalculation);
-            startActivity(informationSelect);
+            try {
+                Intent informationSelect = new Intent(HomePage.this, InformationSelect.class);
+                informationSelect.putExtra("collegeName", collegeName);
+                informationSelect.putExtra("menuFlag", Enumerations.MenuType.GradeCalculation);
+                informationSelect.putExtra("userFlag", userFlag);
+                startActivity(informationSelect);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -178,6 +182,7 @@ public class HomePage extends AppCompatActivity {
             informationSelect.putExtra("collegeName", collegeName);
             informationSelect.putExtra("collegeCode", collegeCode);
             informationSelect.putExtra("menuFlag", Enumerations.MenuType.Attendance);
+            informationSelect.putExtra("userFlag", userFlag);
             startActivity(informationSelect);
         }
     }

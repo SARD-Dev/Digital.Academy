@@ -17,10 +17,11 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.digitalacademy.Common.Helpers.FileHandler;
 import com.example.digitalacademy.Common.Helpers.ProgressDialogHelper;
 import com.example.digitalacademy.Common.Helpers.ToastExtension;
 import com.example.digitalacademy.Common.Models.NotesInfo;
+import com.example.digitalacademy.Common.StorageHandler.StorageFactory;
+import com.example.digitalacademy.Common.StorageHandler.StorageHandler;
 import com.example.digitalacademy.Common.StringUtils;
 import com.example.digitalacademy.Interface.FirebaseCallBack;
 import com.example.digitalacademy.Services.DepartmentService;
@@ -36,7 +37,6 @@ public class NotesUpload extends AppCompatActivity {
     private NotesInfo notesInfo;
     private TextView tvUploadPdf;
     private ProgressDialogHelper progressDialog;
-    private Button btnUploadNotes;
     private ActivityResultLauncher<Intent> pdfPickerLauncher;
     private NotesService notesService;
 
@@ -91,7 +91,7 @@ public class NotesUpload extends AppCompatActivity {
         TextView tvSubjectCode = findViewById(R.id.tvSubjectCode);
 
         tvCollegeName.setText(collegeName);
-        tvSemester.append(semester);
+        tvSemester.setText(String.format("Semester: %s", semester));
         tvSubjectCode.setText(subjectCode);
     }
 
@@ -116,12 +116,11 @@ public class NotesUpload extends AppCompatActivity {
         tvUploadPdf = findViewById(R.id.tvUploadPdf);
         tvUploadPdf.setOnClickListener(v -> uploadPdfEvent());
 
-        btnUploadNotes = findViewById(R.id.btnUploadNotes);
+        Button btnUploadNotes = findViewById(R.id.btnUploadNotes);
         btnUploadNotes.setOnClickListener(v -> uploadNotesEvent());
-        //notesInfo = new NotesInfo();
     }
 
-    /// Method to upload pdf
+    /// Method to upload PDF
     private void uploadPdfEvent() {
         if (this.isNotesNameTagInvalid()) {
             return;
@@ -162,13 +161,13 @@ public class NotesUpload extends AppCompatActivity {
 
         if (StringUtils.isNullOrBlank(notesName) && StringUtils.isNullOrBlank(notesTag)) {
             toast.showShortMessage("Please add PDF name and Some tags...");
-            return false;
+            return true;
         }
 
         notesInfo.setTitle(notesName);
         notesInfo.setTags(notesTag);
 
-        return true;
+        return false;
     }
 
     /// Method to get attachment from device
@@ -183,15 +182,19 @@ public class NotesUpload extends AppCompatActivity {
     private void fetchAttachment(Uri pdfUri) {
         progressDialog.show("Uploading");
 
-        FileHandler handler = new FileHandler();
-        handler.uploadPdf(pdfUri, subjectCode, notesInfo.getTitle(), new FileHandler.UploadCallback() {
+        StorageHandler handler = StorageFactory.getHandler(StorageFactory.Provider.SUPABASE);
+
+        handler.uploadPdf(this, pdfUri, subjectCode, notesInfo.getTitle(), new StorageHandler.UploadCallback() {
             @Override
             public void onSuccess(Uri downloadUrl) {
-                progressDialog.dismiss();
-                notesInfo.setFileUrl(downloadUrl.toString());
-                tvUploadPdf.setVisibility(View.VISIBLE);
-                btnUploadNotes.setClickable(false);
-                toast.showShortMessage("Uploaded Successfully");
+                try {
+                    progressDialog.dismiss();
+                    notesInfo.setFileUrl(downloadUrl.toString());
+                    tvUploadPdf.setVisibility(View.VISIBLE);
+                    tvUploadPdf.setClickable(false);
+                } catch (Exception e) {
+                    progressDialog.dismiss();
+                }
             }
 
             @Override

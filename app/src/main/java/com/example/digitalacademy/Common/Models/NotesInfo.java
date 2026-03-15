@@ -18,13 +18,6 @@ public class NotesInfo implements Comparable<com.example.digitalacademy.Common.M
         this.fileUrl = null;
     }
 
-    public NotesInfo(String title, String tags, String timeStamp, String fileUrl) {
-        this.title = title;
-        this.tags = tags;
-        this.timeStamp = timeStamp;
-        this.fileUrl = fileUrl;
-    }
-
     public String getTitle() {
         return title;
     }

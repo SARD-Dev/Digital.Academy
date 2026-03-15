@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.digitalacademy"
-        minSdk = 28
+        minSdk = 33
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -63,4 +63,9 @@ dependencies {
     // TODO: Add the dependencies for Firebase products you want to use
     // When using the BoM, don't specify versions in Firebase dependencies
     implementation(libs.firebase.analytics)
+    // OkHttp for Supabase REST calls
+    implementation(libs.okhttp)
+    // Optional: JSON parsing if you need it
+    implementation(libs.moshi)
+
 }

@@ -18,7 +18,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.digitalacademy.Common.Helpers.ToastExtension;
 import com.example.digitalacademy.Common.Models.AttendanceInfo;
 import com.example.digitalacademy.Interface.FirebaseCallBack;
-import com.example.digitalacademy.Services.FirebaseService;
+import com.example.digitalacademy.Services.AttendanceService;
 import com.example.digitalacademy.Services.GradeService;
 
 import java.util.List;
@@ -31,8 +31,8 @@ public class StudentAttendanceView extends AppCompatActivity {
     private String semester;
     private String loginKey;
     private String attendanceType;
-    private FirebaseService firebaseService;
     private GradeService gradeService;
+    private AttendanceService attendanceService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,8 +46,8 @@ public class StudentAttendanceView extends AppCompatActivity {
         });
 
         toast = new ToastExtension(this);
-        firebaseService = new FirebaseService();
         gradeService = new GradeService();
+        attendanceService = new AttendanceService();
 
         this.getIntentValues();
         this.assignEventsToControls();
@@ -131,7 +131,7 @@ public class StudentAttendanceView extends AppCompatActivity {
         View attendanceDetailView = findViewById(R.id.attendanceDetailView);
         TextView tvErrorMessage = findViewById(R.id.tvErrorMessage);
 
-        firebaseService.getAttendanceDetails(collegeCode, departmentCode, semester, subjectCode, attendanceType, new FirebaseCallBack<>() {
+        attendanceService.getAttendanceDetails(collegeCode, departmentCode, semester, subjectCode, attendanceType, new FirebaseCallBack<>() {
             @Override
             public void onSuccess(List<AttendanceInfo> object) {
                 if (object != null) {

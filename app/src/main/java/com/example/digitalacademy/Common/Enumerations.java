@@ -3,18 +3,11 @@ package com.example.digitalacademy.Common;
 public class Enumerations {
 
     public enum User {
-        Admin("A"),
-        Faculty("F"),
-        Student("S");
+        Admin(),
+        Faculty(),
+        Student();
 
-        private final String userDescription;
-
-        User(String userDescription) {
-            this.userDescription = userDescription;
-        }
-
-        public String getEnumDescription() {
-            return userDescription;
+        User() {
         }
     }
 

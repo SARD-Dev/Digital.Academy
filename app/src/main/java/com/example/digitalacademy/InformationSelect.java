@@ -46,15 +46,19 @@ public class InformationSelect extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        this.toast = new ToastExtension(InformationSelect.this);
-        this.departmentService = new DepartmentService();
-        this.gradeService = new GradeService();
+        try {
+            this.toast = new ToastExtension(InformationSelect.this);
+            this.departmentService = new DepartmentService();
+            this.gradeService = new GradeService();
 
-        this.getIntentValues();
-        this.setCollegeName();
-        this.setMenuType();
-        this.loadDepartments();
-        this.assignButtonEvent();
+            this.getIntentValues();
+            this.setCollegeName();
+            this.setMenuType();
+            this.loadDepartments();
+            this.assignButtonEvent();
+        } catch (Exception e) {
+            toast.showShortMessage(e.getMessage());
+        }
     }
 
     /// Method to get intent values
@@ -62,14 +66,8 @@ public class InformationSelect extends AppCompatActivity {
         Intent intent = getIntent();
         collegeName = intent.getStringExtra("collegeName");
         collegeCode = intent.getStringExtra("collegeCode");
-        var menu = intent.getSerializableExtra("menuFlag");
-        if (menu instanceof Enumerations.MenuType) {
-            menuFlag = (Enumerations.MenuType) menu;
-        }
-        var user = intent.getSerializableExtra("userFlag");
-        if (user instanceof Enumerations.User) {
-            userFlag = (Enumerations.User) user;
-        }
+        menuFlag = intent.getSerializableExtra("menuFlag", Enumerations.MenuType.class);
+        userFlag = intent.getSerializableExtra("userFlag", Enumerations.User.class);
     }
 
     /// Method to set college name
@@ -262,12 +260,14 @@ public class InformationSelect extends AppCompatActivity {
 
     /// Method to open attendance screen
     private void openAttendanceScreen() {
-        Intent intent = new Intent(InformationSelect.this, CircularScreen.class);
+        Intent intent = new Intent(InformationSelect.this, ListViewScreen.class);
         intent.putExtra("collegeName", collegeName);
         intent.putExtra("collegeCode", collegeCode);
         intent.putExtra("departmentCode", departmentCode);
         intent.putExtra("semester", semester);
         intent.putExtra("subjectCode", subjectCode);
+        intent.putExtra("userFlag", userFlag);
+        intent.putExtra("menuFlag", menuFlag);
         startActivity(intent);
     }
 

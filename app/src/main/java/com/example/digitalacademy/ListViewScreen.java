@@ -13,6 +13,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.digitalacademy.Common.ContainerClasses.TextViewSpinnerButton;
 import com.example.digitalacademy.Common.Enumerations;
 import com.example.digitalacademy.Common.Helpers.AlertDialogHelper;
 import com.example.digitalacademy.Common.Helpers.RecyclerViewAdapter;
@@ -20,13 +21,16 @@ import com.example.digitalacademy.Common.Helpers.ToastExtension;
 import com.example.digitalacademy.Common.Models.CircularInfo;
 import com.example.digitalacademy.Common.Models.NotesInfo;
 import com.example.digitalacademy.Interface.FirebaseCallBack;
+import com.example.digitalacademy.Services.AttendanceService;
 import com.example.digitalacademy.Services.CircularService;
 import com.example.digitalacademy.Services.FirebaseService;
 import com.example.digitalacademy.Services.NotesService;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Objects;
 
 public class ListViewScreen extends AppCompatActivity {
 
@@ -45,6 +49,7 @@ public class ListViewScreen extends AppCompatActivity {
     private String semester;
     private CircularService circularService;
     private NotesService notesService;
+    private AttendanceService attendanceService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +67,7 @@ public class ListViewScreen extends AppCompatActivity {
         alertDialogHelper = new AlertDialogHelper(this);
         circularService = new CircularService();
         notesService = new NotesService();
+        attendanceService = new AttendanceService();
 
         this.setAddButtonEvent();
         this.getIntentValues();
@@ -81,21 +87,18 @@ public class ListViewScreen extends AppCompatActivity {
         Intent intent = getIntent();
         collegeName = intent.getStringExtra("collegeName");
         collegeCode = intent.getStringExtra("collegeCode");
-        var user = intent.getSerializableExtra("userFlag");
-        if (user instanceof Enumerations.User) {
-            userFlag = (Enumerations.User) user;
-        }
-        var menu = intent.getSerializableExtra("menuFlag");
-        if (menu instanceof Enumerations.MenuType) {
-            menuFlag = (Enumerations.MenuType) menu;
-        }
+        userFlag = intent.getSerializableExtra("userFlag", Enumerations.User.class);
+        menuFlag = intent.getSerializableExtra("menuFlag", Enumerations.MenuType.class);
         subjectCode = intent.getStringExtra("subjectCode");
         loginKey = intent.getStringExtra("loginKey");
         userName = intent.getStringExtra("userName");
         departmentCode = intent.getStringExtra("departmentCode");
 
-        if (menuFlag.equals(Enumerations.MenuType.Attendance)) {
+        if (Objects.equals(menuFlag, Enumerations.MenuType.Attendance) && Objects.equals(userFlag, Enumerations.User.Student)) {
             this.getStudentSemster(loginKey);
+        }
+        else{
+            semester = intent.getStringExtra("semester");
         }
     }
 
@@ -190,8 +193,8 @@ public class ListViewScreen extends AppCompatActivity {
         RecyclerView rvNotes = findViewById(R.id.rvInfoList);
         rvNotes.setLayoutManager(new LinearLayoutManager(this));
         RecyclerViewAdapter<String> recyclerViewAdapter = new RecyclerViewAdapter<>(attendanceList,
-                null, //NotesInfo::getRegisterNumber,
-                null, //NotesInfo::getTags,
+                null,
+                null,
                 (item, position) -> getSelectedAttendance(attendanceList, position));
         rvNotes.setAdapter(recyclerViewAdapter);
     }
@@ -220,20 +223,26 @@ public class ListViewScreen extends AppCompatActivity {
 
     /// Method to get selected attendance
     private void getSelectedAttendance(List<String> attendanceList, int position) {
-        this.openAttendanceScreen(attendanceList.get(position));
+        switch (userFlag){
+            case Student:
+                this.openAttendanceViewScreen(attendanceList.get(position));
+                break;
+            case Faculty:
+                this.openAttendanceModifyScreen(attendanceList.get(position));
+                break;
+        }
     }
 
     /// Method to open circular view screen
     private void openCircularViewScreen(CircularInfo circularInfo) {
         Intent circularScreen = new Intent(ListViewScreen.this, CircularScreen.class);
         circularScreen.putExtra("collegeName", collegeName);
-        //intent.putExtra("collegeCode", collegeCode);
-        circularScreen.putExtra("circularInfo", circularInfo); // circularInfo is Serializable
+        circularScreen.putExtra("circularInfo", circularInfo);
         startActivity(circularScreen);
     }
 
     /// Method to open attendance screen
-    private void openAttendanceScreen(String attendanceType) {
+    private void openAttendanceViewScreen(String attendanceType) {
         Intent studentAttendanceView = new Intent(ListViewScreen.this, StudentAttendanceView.class);
         studentAttendanceView.putExtra("attendanceType", attendanceType);
         studentAttendanceView.putExtra("collegeName", collegeName);
@@ -242,6 +251,18 @@ public class ListViewScreen extends AppCompatActivity {
         studentAttendanceView.putExtra("collegeCode", collegeCode);
         studentAttendanceView.putExtra("departmentCode", departmentCode);
         studentAttendanceView.putExtra("semester", semester);
+        startActivity(studentAttendanceView);
+    }
+
+    /// Method to open attendance modify screen
+    private void openAttendanceModifyScreen(String attendanceType) {
+        Intent studentAttendanceView = new Intent(ListViewScreen.this, AttendanceModify.class);
+        studentAttendanceView.putExtra("attendanceType", attendanceType);
+        studentAttendanceView.putExtra("collegeName", collegeName);
+        studentAttendanceView.putExtra("collegeCode", collegeCode);
+        studentAttendanceView.putExtra("departmentCode", departmentCode);
+        studentAttendanceView.putExtra("semester", semester);
+        studentAttendanceView.putExtra("subjectCode", subjectCode);
         startActivity(studentAttendanceView);
     }
 
@@ -260,6 +281,9 @@ public class ListViewScreen extends AppCompatActivity {
             case Circular:
                 this.openCircularUploadScreen();
                 break;
+            case Attendance:
+                this.openAttendanceUploadScreenBasedOnAttendanceType();
+                break;
         }
     }
 
@@ -267,9 +291,9 @@ public class ListViewScreen extends AppCompatActivity {
     private void openNotesUploadScreen() {
         Intent notesUpload = new Intent(ListViewScreen.this, NotesUpload.class);
         notesUpload.putExtra("collegeName", collegeName);
-        notesUpload.putExtra("collegeName", collegeCode);
-        //notesUpload.putExtra("departmentCode", departmentCode);
-        //notesUpload.putExtra("semester", semester);
+        notesUpload.putExtra("collegeCode", collegeCode);
+        notesUpload.putExtra("departmentCode", departmentCode);
+        notesUpload.putExtra("semester", semester);
         notesUpload.putExtra("subjectCode", subjectCode);
         startActivity(notesUpload);
     }
@@ -280,6 +304,21 @@ public class ListViewScreen extends AppCompatActivity {
         circularUploadIntent.putExtra("collegeName", collegeName);
         circularUploadIntent.putExtra("collegeCode", collegeCode);
         startActivity(circularUploadIntent);
+    }
+
+    /// Method to open attendance upload screen based on attendance type
+    private void openAttendanceUploadScreenBasedOnAttendanceType() {
+        List<String> attendanceTypeArray = Arrays.asList(
+                "Internal 1",
+                "Internal 2",
+                "Internal 3",
+                "Internal 4",
+                "Overall");
+        TextViewSpinnerButton.show(this,
+                "Select an Attendance",
+                attendanceTypeArray,
+                0,
+                this::getSelectedAttendanceMenuType);
     }
 
     /// Method to show download view dialog
@@ -304,6 +343,59 @@ public class ListViewScreen extends AppCompatActivity {
                     // Do nothing, just dismiss
                 }
         });
+    }
+
+    /// Method to get selected attendance menu type
+    private void getSelectedAttendanceMenuType(String attendanceType) {
+        attendanceService.getAttendanceTypeList(collegeCode,
+                departmentCode,
+                semester,
+                subjectCode,
+                new FirebaseCallBack<>() {
+                    @Override
+                    public void onSuccess(List<String> object) {
+                        if (object != null && object.contains(attendanceType)) {
+                            toast.showShortMessage(attendanceType + " is already entered.");
+                        } else {
+                            saveAttendanceType(attendanceType);
+                        }
+                    }
+
+                    @Override
+                    public void onError(String object) {
+                        toast.showShortMessage(object);
+                    }
+                });
+    }
+
+    /// Method to save attendance type
+    private void saveAttendanceType(String attendanceType){
+        attendanceService.setAttendanceType(collegeCode,
+                departmentCode,
+                semester,
+                subjectCode,
+                attendanceType, new FirebaseCallBack<>() {
+            @Override
+            public void onSuccess(String object) {
+                openAttendanceUploadScreen(attendanceType);
+            }
+            @Override
+            public void onError(String object) {
+                toast.showShortMessage(object);
+            }
+        });
+    }
+
+    /// Method to open attendance upload screen
+    private void openAttendanceUploadScreen(String attendanceType){
+        Intent attendanceUploadIntent = new Intent(this, AttendanceEntry.class);
+        attendanceUploadIntent.putExtra("collegeName", collegeName);
+        attendanceUploadIntent.putExtra("collegeCode", collegeCode);
+        attendanceUploadIntent.putExtra("departmentCode", departmentCode);
+        attendanceUploadIntent.putExtra("semester", semester);
+        attendanceUploadIntent.putExtra("subjectCode", subjectCode);
+        attendanceUploadIntent.putExtra("attendanceType", attendanceType);
+        startActivity(attendanceUploadIntent);
     }
 
 }

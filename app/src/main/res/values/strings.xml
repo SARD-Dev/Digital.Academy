@@ -34,7 +34,7 @@
     <string name="click_here">Click here</string>
     <string name="enter_here">Enter here :</string>
     <string name="get_otp">Get OTP</string>
-    <string name="otp_has_been_send_to_the_following_mobile_number">OTP has been send to the following mobile number</string>
+    <string name="otp_has_been_sent_to_the_following_mobile_number">OTP has been sent to the following mobile number</string>
     <string name="resend_otp">Resend OTP</string>
     <string name="enter_the_otp">Enter the OTP:</string>
     <string name="verify_otp">Verify OTP</string>
@@ -99,4 +99,13 @@
     <string name="staff_code">Staff Code :</string>
     <string name="college">College :</string>
     <string name="college_code">College Code :</string>
+    <string name="total_working_days">Total Working Days :</string>
+    <string name="hyphen">-</string>
+    <string name="plus">+</string>
+    <string name="number_of_days_present">Number of days present :</string>
+    <string name="done">Done</string>
+    <string name="enter_the_register_number">Enter the Register Number :</string>
+    <string name="search">Search</string>
+    <string name="update">Update</string>
+    <string name="ok">OK</string>
 </resources>

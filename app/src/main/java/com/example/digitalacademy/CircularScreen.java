@@ -40,12 +40,8 @@ public class CircularScreen extends AppCompatActivity {
     /// Method to get intent values
     private void getIntentValues() {
         Intent intent = getIntent();
-        CircularInfo circularInfo = null;
         String collegeName = intent.getStringExtra("collegeName");
-        var circularData = intent.getSerializableExtra("circularInfo");
-        if (circularData instanceof CircularInfo) {
-            circularInfo = (CircularInfo) circularData;
-        }
+        CircularInfo circularInfo = intent.getSerializableExtra("circularInfo", CircularInfo.class);
         setCollegeName(collegeName);
         setCircularView(Objects.requireNonNull(circularInfo));
     }

@@ -61,10 +61,7 @@ public class LoginScreen extends AppCompatActivity {
     /// Method to get intent values
     private void getIntentValues() {
         Intent intent = getIntent();
-        var user = intent.getSerializableExtra("userFlag");
-        if (user instanceof Enumerations.User) {
-            this.userFlag = (Enumerations.User) user;
-        }
+        this.userFlag = intent.getSerializableExtra("userFlag", Enumerations.User.class);
     }
 
     /// Method to load control instances

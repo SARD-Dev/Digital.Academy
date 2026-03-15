@@ -38,6 +38,7 @@ public class TextViewSpinnerButton {
         TextView tvTitle = view.findViewById(R.id.dialogTitle);
         Spinner spinner = view.findViewById(R.id.dialogSpinner);
         Button btnOk = view.findViewById(R.id.dialogButton);
+        btnOk.setText(R.string.ok);
 
         // Set title
         tvTitle.setText(title);
